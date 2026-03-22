@@ -1,19 +1,34 @@
 /* ============================================
-   nav.js — Gemeinsame Navigation
+   nav.js — Navigation & Footer (alle Seiten)
    ============================================ */
 
-// Aktuelle Seite ermitteln
 const _page = window.location.pathname.split('/').pop() || 'index.html';
 
+const NAV_LINKS = [
+  { href: 'index.html',              label: 'Räume',              icon: '🏠' },
+  { href: 'alle-gegenstaende.html',  label: 'Alle Gegenstände',   icon: '📋' },
+  { href: 'statistik.html',          label: 'Statistik',          icon: '📊' },
+  { href: 'konto.html',              label: 'Konto',              icon: '🔐' },
+];
+
+// ── Topbar-Navigation ────────────────────────
 function renderNav(user) {
   const nav = document.getElementById('main-nav');
   if (!nav) return;
 
-  nav.innerHTML = `
-    <div class="nav-logo" onclick="window.location.href='index.html'" style="cursor:pointer">🏠 <span>Inventar</span></div>
+  const accountBtn = user
+    ? `<a href="konto.html" class="nav-account nav-account--in" title="${user.email}">
+         <span class="nav-account-avatar">${(user.displayName || user.email)[0].toUpperCase()}</span>
+         <span class="nav-account-label">${user.displayName || 'Konto'}</span>
+       </a>`
+    : `<a href="konto.html" class="nav-account nav-account--out ${_page === 'konto.html' ? 'active' : ''}">
+         🔐 Anmelden
+       </a>`;
 
-    <!-- Hamburger (Mobile) -->
-    <button class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileMenu()" aria-label="Menü">
+  nav.innerHTML = `
+    <a class="nav-logo" href="index.html">🏠 <span>Inventar</span></a>
+
+    <button class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileMenu()" aria-label="Menü öffnen">
       <span></span><span></span><span></span>
     </button>
 
@@ -22,7 +37,7 @@ function renderNav(user) {
         <a class="nav-tab ${_page === 'index.html' || _page === '' ? 'active' : ''}"
            href="index.html">🏠 Räume</a>
         <a class="nav-tab ${_page === 'alle-gegenstaende.html' ? 'active' : ''}"
-           href="alle-gegenstaende.html">📋 Alle</a>
+           href="alle-gegenstaende.html">📋 Alle Gegenstände</a>
         <a class="nav-tab ${_page === 'statistik.html' ? 'active' : ''}"
            href="statistik.html">📊 Statistik</a>
       </div>
@@ -32,30 +47,82 @@ function renderNav(user) {
           <span><strong id="stat-rooms">0</strong> Räume</span>
           <span><strong id="stat-items">0</strong> Gegenstände</span>
         </div>
-        ${user
-          ? `<a href="konto.html" class="nav-account nav-account--in" title="${user.email}">
-               <span class="nav-account-avatar">${(user.displayName || user.email)[0].toUpperCase()}</span>
-               <span class="nav-account-label">${user.displayName || 'Konto'}</span>
-             </a>`
-          : `<a href="konto.html" class="nav-account nav-account--out ${_page === 'konto.html' ? 'active' : ''}">
-               🔐 Anmelden
-             </a>`
-        }
+        ${accountBtn}
       </div>
     </div>
   `;
 
   updateNavStats();
+  renderFooter(user);
 }
 
+// ── Footer ───────────────────────────────────
+function renderFooter(user) {
+  // Vorhandenen Footer entfernen (verhindert Duplikate)
+  const existing = document.getElementById('main-footer');
+  if (existing) existing.remove();
+
+  const footer = document.createElement('footer');
+  footer.id = 'main-footer';
+  footer.innerHTML = `
+    <div class="footer-inner">
+
+      <div class="footer-brand">
+        <div class="footer-logo">🏠 <span>Wohnungs-Inventar</span></div>
+        <p class="footer-tagline">Alle Gegenstände deiner Wohnung<br>geräteübergreifend im Blick.</p>
+        <div class="footer-stats-row" id="footer-stats">
+          <span class="footer-stat-pill"><strong id="fstat-rooms">–</strong> Räume</span>
+          <span class="footer-stat-pill"><strong id="fstat-items">–</strong> Gegenstände</span>
+        </div>
+      </div>
+
+      <nav class="footer-nav" aria-label="Seitennavigation">
+        <div class="footer-nav-col">
+          <div class="footer-col-title">Navigation</div>
+          <a href="index.html"             class="footer-link ${_page === 'index.html' ? 'footer-link--active' : ''}">🏠 Räume</a>
+          <a href="alle-gegenstaende.html" class="footer-link ${_page === 'alle-gegenstaende.html' ? 'footer-link--active' : ''}">📋 Alle Gegenstände</a>
+          <a href="statistik.html"         class="footer-link ${_page === 'statistik.html' ? 'footer-link--active' : ''}">📊 Statistik</a>
+          <a href="konto.html"             class="footer-link ${_page === 'konto.html' ? 'footer-link--active' : ''}">🔐 Konto &amp; Anmeldung</a>
+        </div>
+
+        <div class="footer-nav-col">
+          <div class="footer-col-title">Konto</div>
+          ${user
+            ? `<span class="footer-user">
+                 <span class="footer-user-dot"></span>
+                 Angemeldet als<br><strong>${user.email}</strong>
+               </span>
+               <a href="konto.html" class="footer-link">Profil ansehen →</a>`
+            : `<p class="footer-hint">Melde dich an, um dein Inventar geräteübergreifend zu synchronisieren.</p>
+               <a href="konto.html" class="footer-cta">🔐 Jetzt anmelden</a>`
+          }
+        </div>
+      </nav>
+
+    </div>
+
+    <div class="footer-bottom">
+      <span>Wohnungs-Inventar · Privat &amp; sicher gespeichert</span>
+      <span class="footer-sep">·</span>
+      <span>Daten gehören nur dir</span>
+    </div>
+  `;
+
+  document.body.appendChild(footer);
+
+  // Footer-Statistiken befüllen
+  const fr = document.getElementById('fstat-rooms');
+  const fi = document.getElementById('fstat-items');
+  if (fr) fr.textContent = state?.rooms?.length ?? '–';
+  if (fi) fi.textContent = state?.items?.length ?? '–';
+}
+
+// ── Mobile Hamburger ─────────────────────────
 function toggleMobileMenu() {
-  const menu = document.getElementById('nav-menu');
-  const btn  = document.getElementById('nav-hamburger');
-  menu.classList.toggle('open');
-  btn.classList.toggle('open');
+  document.getElementById('nav-menu')?.classList.toggle('open');
+  document.getElementById('nav-hamburger')?.classList.toggle('open');
 }
 
-// Schließe Menü bei Klick außerhalb
 document.addEventListener('click', e => {
   const menu = document.getElementById('nav-menu');
   const btn  = document.getElementById('nav-hamburger');
