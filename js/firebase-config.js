@@ -23,12 +23,13 @@
    ============================================ */
 
 const firebaseConfig = {
-  apiKey:            "DEIN_API_KEY",
-  authDomain:        "DEIN_PROJEKT.firebaseapp.com",
-  projectId:         "DEIN_PROJEKT_ID",
-  storageBucket:     "DEIN_PROJEKT.appspot.com",
-  messagingSenderId: "DEINE_SENDER_ID",
-  appId:             "DEINE_APP_ID"
+  apiKey:            "AIzaSyBN-ENcn4PaoLsNNp4AGDxsQ1zUWViuN7Y",
+  authDomain:        "abitclumsy-home-inventory.firebaseapp.com",
+  projectId:         "abitclumsy-home-inventory",
+  storageBucket:     "abitclumsy-home-inventory.firebasestorage.app",
+  messagingSenderId: "1024081432361",
+  appId:             "1:1024081432361:web:f3cf7d3410ee2350083138",
+  measurementId:     "G-DX1E0H8Y1K"
 };
 
 // Firebase initialisieren

@@ -3,39 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Konto – Wohnungs-Inventar</title>
-  <meta name="description" content="Login und Profil für die Wohnungs-Inventar App.">
+  <title>Speicherung – Wohnungs-Inventar</title>
+  <meta name="description" content="Informationen zur Datenspeicherung.">
   <meta name="robots" content="noindex, nofollow">
   <link rel="canonical" href="https://DEINE-DOMAIN.de/konto.html">
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <style>
-    .auth-wrap      { max-width: 420px; margin: 4rem auto; padding: 0 1rem; }
-    .auth-card      { background: var(--card); border: 1.5px solid var(--border); border-radius: 20px; padding: 2.5rem; box-shadow: 0 8px 32px var(--shadow); }
-    .auth-logo      { text-align: center; font-size: 2.8rem; margin-bottom: 0.5rem; }
-    .auth-title     { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; text-align: center; color: var(--text); margin-bottom: 0.25rem; }
-    .auth-sub       { text-align: center; font-size: 0.85rem; color: var(--text2); margin-bottom: 2rem; }
-    .auth-tabs      { display: flex; border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 1.8rem; }
-    .auth-tab       { flex: 1; padding: 0.6rem; border: none; background: none; font-family: inherit; font-size: 0.85rem; font-weight: 600; color: var(--text2); cursor: pointer; transition: all .2s; }
-    .auth-tab.active { background: var(--accent); color: #fff; }
-    .auth-divider   { text-align: center; color: var(--text2); font-size: 0.78rem; margin: 1.2rem 0; position: relative; }
-    .auth-divider::before, .auth-divider::after { content: ''; position: absolute; top: 50%; width: 40%; height: 1px; background: var(--border); }
-    .auth-divider::before { left: 0; } .auth-divider::after { right: 0; }
-    .btn-google     { width: 100%; background: #fff; color: #444; border: 1.5px solid var(--border); font-size: 0.9rem; gap: 0.6rem; justify-content: center; padding: 0.65rem; }
-    .btn-google:hover { background: var(--bg2); border-color: #aaa; }
-    .btn-google img { width: 18px; }
-    .profile-card   { background: var(--card); border: 1.5px solid var(--border); border-radius: 16px; padding: 2rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center; }
-    .profile-avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #fff; }
-    .profile-email  { font-size: 0.9rem; color: var(--text2); }
-    .profile-stats  { display: flex; gap: 2rem; margin: 0.5rem 0; }
-    .profile-stat   { text-align: center; }
-    .profile-stat strong { display: block; font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--accent); }
-    .profile-stat span  { font-size: 0.75rem; color: var(--text2); }
-    .sync-info      { background: var(--bg2); border-radius: 10px; padding: 1rem; font-size: 0.82rem; color: var(--text2); line-height: 1.5; width: 100%; }
-    .error-msg      { background: #fef0f0; border: 1px solid #fcc; color: #c0392b; border-radius: 8px; padding: 0.65rem 1rem; font-size: 0.82rem; margin-bottom: 1rem; display: none; }
-    .success-msg    { background: #e8f7ee; border: 1px solid #9fd4b5; color: #2d7a4f; border-radius: 8px; padding: 0.65rem 1rem; font-size: 0.82rem; margin-bottom: 1rem; display: none; }
+    .info-wrap  { max-width: 480px; margin: 3rem auto; padding: 0 1rem; }
+    .info-card  { background: var(--card); border: 1.5px solid var(--border); border-radius: 20px; padding: 2.5rem; box-shadow: 0 8px 32px var(--shadow); }
+    .info-icon  { font-size: 2.8rem; text-align: center; display: block; margin-bottom: 0.5rem; }
+    .info-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; text-align: center; color: var(--text); margin-bottom: 0.4rem; }
+    .info-sub   { text-align: center; font-size: 0.85rem; color: var(--text2); margin-bottom: 2rem; }
+    .info-row   { display: flex; gap: 1rem; align-items: flex-start; padding: 1rem 0; border-bottom: 1px solid var(--border); }
+    .info-row:last-of-type { border-bottom: none; }
+    .info-emoji { font-size: 1.4rem; flex-shrink: 0; margin-top: 1px; }
+    .info-text strong { display: block; font-size: 0.9rem; color: var(--text); margin-bottom: 0.2rem; }
+    .info-text p { font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
+    .stat-row   { display: flex; gap: 1rem; margin-top: 2rem; }
+    .stat-box   { flex: 1; background: var(--bg2); border-radius: 12px; padding: 1rem; text-align: center; }
+    .stat-box strong { display: block; font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--accent); }
+    .stat-box span   { font-size: 0.75rem; color: var(--text2); }
   </style>
 </head>
 <body>
@@ -43,74 +32,53 @@
   <nav id="main-nav"></nav>
 
   <main>
-    <!-- Nicht eingeloggt: Login/Register-Formular -->
-    <div class="auth-wrap" id="auth-section">
-      <div class="auth-card">
-        <div class="auth-logo">🔐</div>
-        <div class="auth-title">Wohnungs-Inventar</div>
-        <div class="auth-sub">Geräteübergreifend speichern mit eigenem Konto</div>
+    <div class="info-wrap">
+      <div class="info-card">
+        <span class="info-icon">💾</span>
+        <div class="info-title">Datenspeicherung</div>
+        <div class="info-sub">Dein Inventar wird automatisch auf diesem Gerät gespeichert</div>
 
-        <div class="auth-tabs">
-          <button class="auth-tab active" id="tab-login"    onclick="switchTab('login')">Anmelden</button>
-          <button class="auth-tab"        id="tab-register" onclick="switchTab('register')">Registrieren</button>
-        </div>
-
-        <div id="error-msg"   class="error-msg"></div>
-        <div id="success-msg" class="success-msg"></div>
-
-        <div class="form-group">
-          <label class="form-label">E-Mail-Adresse</label>
-          <input type="email" class="form-input" id="auth-email" placeholder="name@example.com" autocomplete="email">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Passwort</label>
-          <input type="password" class="form-input" id="auth-password" placeholder="Mindestens 6 Zeichen" autocomplete="current-password" onkeydown="if(event.key==='Enter') submitAuth()">
-        </div>
-        <div class="form-group" id="password-confirm-group" style="display:none">
-          <label class="form-label">Passwort bestätigen</label>
-          <input type="password" class="form-input" id="auth-password2" placeholder="Passwort wiederholen" onkeydown="if(event.key==='Enter') submitAuth()">
-        </div>
-
-        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:.7rem;font-size:.95rem;margin-bottom:.75rem" onclick="submitAuth()" id="submit-btn">
-          Anmelden
-        </button>
-
-        <div id="forgot-pw" style="text-align:center;margin-bottom:.75rem">
-          <a href="#" style="font-size:.8rem;color:var(--accent)" onclick="resetPassword()">Passwort vergessen?</a>
-        </div>
-
-        <div class="auth-divider">oder</div>
-
-        <button class="btn btn-google" onclick="signInWithGoogle()">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
-          Mit Google anmelden
-        </button>
-      </div>
-    </div>
-
-    <!-- Eingeloggt: Profil-Ansicht -->
-    <div class="auth-wrap" id="profile-section" style="display:none">
-      <div class="auth-card">
-        <div class="auth-logo">✅</div>
-        <div class="auth-title">Mein Konto</div>
-        <div class="auth-sub">Angemeldet & geräteübergreifend synchronisiert</div>
-
-        <div class="profile-card">
-          <div class="profile-avatar" id="profile-avatar">👤</div>
-          <div>
-            <div style="font-weight:600;font-size:1rem" id="profile-name">–</div>
-            <div class="profile-email" id="profile-email">–</div>
+        <div class="info-row">
+          <span class="info-emoji">✅</span>
+          <div class="info-text">
+            <strong>Automatisches Speichern</strong>
+            <p>Jede Änderung wird sofort im Speicher deines Browsers gesichert — du musst nichts extra tun.</p>
           </div>
-          <div class="profile-stats">
-            <div class="profile-stat"><strong id="ps-rooms">0</strong><span>Räume</span></div>
-            <div class="profile-stat"><strong id="ps-items">0</strong><span>Gegenstände</span></div>
+        </div>
+
+        <div class="info-row">
+          <span class="info-emoji">🔒</span>
+          <div class="info-text">
+            <strong>Privat & sicher</strong>
+            <p>Deine Daten verlassen nie dein Gerät. Es gibt keinen Server, kein Konto, keine Cloud.</p>
           </div>
-          <div class="sync-info">
-            ☁️ Deine Daten werden automatisch in der Cloud gespeichert und sind auf allen Geräten verfügbar, auf denen du dich mit diesem Konto anmeldest.
+        </div>
+
+        <div class="info-row">
+          <span class="info-emoji">📱</span>
+          <div class="info-text">
+            <strong>Gerätgebunden</strong>
+            <p>Die Daten sind an diesen Browser gebunden. Auf einem anderen Gerät oder Browser startest du mit einer leeren Liste.</p>
           </div>
-          <button class="btn btn-danger" style="width:100%;justify-content:center" onclick="signOutUser()">
-            🚪 Abmelden
-          </button>
+        </div>
+
+        <div class="info-row">
+          <span class="info-emoji">⚠️</span>
+          <div class="info-text">
+            <strong>Browser-Cache löschen</strong>
+            <p>Wenn du den Browser-Cache oder die Website-Daten löschst, gehen deine Einträge verloren. Mache regelmäßig Notizen von wichtigen Gegenständen.</p>
+          </div>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat-box">
+            <strong id="s-rooms">–</strong>
+            <span>Räume gespeichert</span>
+          </div>
+          <div class="stat-box">
+            <strong id="s-items">–</strong>
+            <span>Gegenstände gespeichert</span>
+          </div>
         </div>
       </div>
     </div>
@@ -118,123 +86,13 @@
 
   <div id="toast" class="toast"></div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
-  <script src="js/firebase-config.js"></script>
   <script src="js/data.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/nav.js"></script>
   <script>
-    let isLogin = true;
-
-    function switchTab(tab) {
-      isLogin = tab === 'login';
-      document.getElementById('tab-login').classList.toggle('active', isLogin);
-      document.getElementById('tab-register').classList.toggle('active', !isLogin);
-      document.getElementById('submit-btn').textContent = isLogin ? 'Anmelden' : 'Konto erstellen';
-      document.getElementById('password-confirm-group').style.display = isLogin ? 'none' : 'block';
-      document.getElementById('forgot-pw').style.display = isLogin ? 'block' : 'none';
-      clearMessages();
-    }
-
-    function showError(msg) {
-      const el = document.getElementById('error-msg');
-      el.textContent = msg; el.style.display = 'block';
-      document.getElementById('success-msg').style.display = 'none';
-    }
-
-    function showSuccess(msg) {
-      const el = document.getElementById('success-msg');
-      el.textContent = msg; el.style.display = 'block';
-      document.getElementById('error-msg').style.display = 'none';
-    }
-
-    function clearMessages() {
-      document.getElementById('error-msg').style.display = 'none';
-      document.getElementById('success-msg').style.display = 'none';
-    }
-
-    function getFirebaseErrorMsg(code) {
-      const msgs = {
-        'auth/user-not-found':     'Kein Konto mit dieser E-Mail gefunden.',
-        'auth/wrong-password':     'Falsches Passwort.',
-        'auth/email-already-in-use': 'Diese E-Mail ist bereits registriert.',
-        'auth/weak-password':      'Das Passwort muss mindestens 6 Zeichen lang sein.',
-        'auth/invalid-email':      'Ungültige E-Mail-Adresse.',
-        'auth/too-many-requests':  'Zu viele Versuche. Bitte warte kurz.',
-        'auth/popup-closed-by-user': 'Das Popup wurde geschlossen.',
-      };
-      return msgs[code] || 'Ein Fehler ist aufgetreten. Bitte erneut versuchen.';
-    }
-
-    async function submitAuth() {
-      const email = document.getElementById('auth-email').value.trim();
-      const pw    = document.getElementById('auth-password').value;
-      if (!email || !pw) { showError('Bitte E-Mail und Passwort eingeben.'); return; }
-      clearMessages();
-
-      try {
-        if (isLogin) {
-          await firebase.auth().signInWithEmailAndPassword(email, pw);
-        } else {
-          const pw2 = document.getElementById('auth-password2').value;
-          if (pw !== pw2) { showError('Passwörter stimmen nicht überein.'); return; }
-          await firebase.auth().createUserWithEmailAndPassword(email, pw);
-        }
-      } catch (err) {
-        showError(getFirebaseErrorMsg(err.code));
-      }
-    }
-
-    async function signInWithGoogle() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      try {
-        await firebase.auth().signInWithPopup(provider);
-      } catch (err) {
-        showError(getFirebaseErrorMsg(err.code));
-      }
-    }
-
-    async function resetPassword() {
-      const email = document.getElementById('auth-email').value.trim();
-      if (!email) { showError('Bitte zuerst deine E-Mail eingeben.'); return; }
-      try {
-        await firebase.auth().sendPasswordResetEmail(email);
-        showSuccess('Reset-Link wurde an ' + email + ' gesendet.');
-      } catch (err) {
-        showError(getFirebaseErrorMsg(err.code));
-      }
-    }
-
-    async function signOutUser() {
-      await firebase.auth().signOut();
-      showToast('Erfolgreich abgemeldet');
-    }
-
-    function showProfile(user) {
-      document.getElementById('auth-section').style.display    = 'none';
-      document.getElementById('profile-section').style.display = 'block';
-      const name = user.displayName || user.email.split('@')[0];
-      document.getElementById('profile-name').textContent  = name;
-      document.getElementById('profile-email').textContent = user.email;
-      document.getElementById('profile-avatar').textContent = name[0].toUpperCase();
-      document.getElementById('ps-rooms').textContent = state.rooms.length;
-      document.getElementById('ps-items').textContent = state.items.length;
-    }
-
-    function showAuthForm() {
-      document.getElementById('auth-section').style.display    = 'block';
-      document.getElementById('profile-section').style.display = 'none';
-    }
-
-    // Auth state watcher
     initApp(() => {
-      firebase.auth().onAuthStateChanged(user => {
-        if (user) showProfile(user);
-        else       showAuthForm();
-      });
+      document.getElementById('s-rooms').textContent = state.rooms.length;
+      document.getElementById('s-items').textContent = state.items.length;
     });
   </script>
 </body>
