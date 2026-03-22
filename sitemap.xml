@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  sitemap.xml – Wohnungs-Inventar
+  Bitte "DEINE-DOMAIN.de" durch deine echte Domain ersetzen.
+  Da alle Seiten mit noindex versehen sind (private App),
+  wird diese Sitemap nur für interne Zwecke / Crawler-Steuerung verwendet.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://DEINE-DOMAIN.de/index.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://DEINE-DOMAIN.de/alle-gegenstaende.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://DEINE-DOMAIN.de/statistik.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://DEINE-DOMAIN.de/konto.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!--
+    Raum-Seiten (room.html?id=X) werden NICHT in der Sitemap aufgeführt,
+    da sie dynamisch aus den Nutzerdaten generiert werden.
+    Sie sind ohnehin mit noindex versehen.
+  -->
+
+</urlset>

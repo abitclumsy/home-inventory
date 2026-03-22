@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistik – Wohnungs-Inventar</title>
+  <meta name="description" content="Statistiken und Übersicht des Wohnungs-Inventars.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://DEINE-DOMAIN.de/statistik.html">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Statistik – Wohnungs-Inventar",
+    "description": "Statistische Auswertung des Wohnungsinventars.",
+    "url": "https://DEINE-DOMAIN.de/statistik.html",
+    "isPartOf": { "@type": "WebApplication", "name": "Wohnungs-Inventar" }
+  }
+  </script>
+</head>
+<body>
+
+  <nav id="main-nav"></nav>
+
+  <main>
+    <div class="page-header">
+      <div>
+        <h1 class="section-title">Statistik & Übersicht</h1>
+        <p class="section-sub">Auswertung deines gesamten Inventars</p>
+      </div>
+    </div>
+
+    <div class="stats-grid" id="stats-cards"></div>
+
+    <div class="chart-row">
+      <div class="chart-card">
+        <div class="chart-title">Gegenstände pro Raum</div>
+        <div id="chart-rooms"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Zustand der Gegenstände</div>
+        <div id="chart-conditions"></div>
+      </div>
+    </div>
+
+    <div class="chart-row" style="margin-top:1.5rem">
+      <div class="chart-card">
+        <div class="chart-title">Kategorien</div>
+        <div id="chart-categories"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Kaufjahr (Top-Jahre)</div>
+        <div id="chart-years"></div>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    function renderStats() {
+      const total    = state.items.length;
+      const totalQty = state.items.reduce((s, i) => s + i.qty, 0);
+      const gut      = state.items.filter(i => i.condition === 'Gut').length;
+
+      document.getElementById('stats-cards').innerHTML = `
+        <div class="stat-card"><div class="stat-value">${state.rooms.length}</div><div class="stat-label">🏠 Räume</div></div>
+        <div class="stat-card"><div class="stat-value">${total}</div><div class="stat-label">📋 Positionen</div></div>
+        <div class="stat-card"><div class="stat-value">${totalQty}</div><div class="stat-label">📦 Gesamt-Stück</div></div>
+        <div class="stat-card"><div class="stat-value">${Math.round((gut / (total || 1)) * 100)}%</div><div class="stat-label">✅ Guter Zustand</div></div>
+      `;
+
+      // Räume-Balken
+      const maxR = Math.max(...state.rooms.map(r => state.items.filter(i => i.roomId === r.id).length), 1);
+      document.getElementById('chart-rooms').innerHTML = state.rooms.map(r => {
+        const c = state.items.filter(i => i.roomId === r.id).length;
+        return `<div class="bar-row"><div class="bar-label">${r.icon} ${r.name}</div><div class="bar-track"><div class="bar-fill" style="width:${(c/maxR)*100}%;background:${r.color}"></div></div><div class="bar-num">${c}</div></div>`;
+      }).join('');
+
+      // Donut-Chart Zustände
+      const conds  = ['Gut','Mittel','Schlecht'];
+      const colors = ['#7B9E6B','#C4A22D','#C4622D'];
+      const counts = conds.map(c => state.items.filter(i => i.condition === c).length);
+      const tot2   = counts.reduce((a,b) => a+b, 1);
+      document.getElementById('chart-conditions').innerHTML = `
+        <div class="donut-wrap">
+          <canvas id="cond-canvas" width="110" height="110"></canvas>
+          <div class="legend">${conds.map((c,i) => `<div class="legend-item"><div class="legend-dot" style="background:${colors[i]}"></div><span>${c}: <strong>${counts[i]}</strong></span></div>`).join('')}</div>
+        </div>`;
+      setTimeout(() => {
+        const cv = document.getElementById('cond-canvas');
+        if (!cv) return;
+        const ctx = cv.getContext('2d'); let start = -Math.PI/2;
+        counts.forEach((c,i) => {
+          if (!c) return;
+          const ang = (c/tot2)*Math.PI*2;
+          ctx.beginPath(); ctx.moveTo(55,55); ctx.arc(55,55,46,start,start+ang); ctx.closePath(); ctx.fillStyle=colors[i]; ctx.fill(); start+=ang;
+        });
+        ctx.beginPath(); ctx.arc(55,55,26,0,Math.PI*2); ctx.fillStyle='#FFFDF8'; ctx.fill();
+      }, 80);
+
+      // Kategorien-Balken
+      const cats = {};
+      state.items.forEach(i => { cats[i.category] = (cats[i.category]||0) + 1; });
+      const catEntries = Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+      const maxC = catEntries[0]?.[1] || 1;
+      document.getElementById('chart-categories').innerHTML = catEntries.map(([cat, c]) =>
+        `<div class="bar-row"><div class="bar-label">${cat}</div><div class="bar-track"><div class="bar-fill" style="width:${(c/maxC)*100}%;background:var(--accent3)"></div></div><div class="bar-num">${c}</div></div>`
+      ).join('') || '<p style="color:var(--text2);font-size:.85rem">Keine Daten</p>';
+
+      // Kaufjahr-Balken (Top 6)
+      const years = {};
+      state.items.filter(i=>i.year).forEach(i => { years[i.year] = (years[i.year]||0)+1; });
+      const yearEntries = Object.entries(years).sort((a,b)=>b[1]-a[1]).slice(0,6);
+      const maxY = yearEntries[0]?.[1] || 1;
+      document.getElementById('chart-years').innerHTML = yearEntries.map(([yr, c]) =>
+        `<div class="bar-row"><div class="bar-label">${yr}</div><div class="bar-track"><div class="bar-fill" style="width:${(c/maxY)*100}%;background:var(--accent2)"></div></div><div class="bar-num">${c}</div></div>`
+      ).join('') || '<p style="color:var(--text2);font-size:.85rem">Keine Kaufjahrsdaten</p>';
+    }
+
+    initApp(() => { renderStats(); });
+  </script>
+</body>
+</html>

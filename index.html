@@ -3,227 +3,145 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wohnungs-Inventar</title>
+  <title>Wohnungs-Inventar – Meine Räume</title>
+  <meta name="description" content="Private Bestandsaufnahme der Wohnung – Räume, Gegenstände und Statistiken.">
+
+  <!-- Robots: App ist privat, nicht indexieren -->
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Self-referencing Canonical -->
+  <link rel="canonical" href="https://DEINE-DOMAIN.de/index.html">
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
+
+  <!-- JSON-LD: WebApplication -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Wohnungs-Inventar",
+    "description": "Interaktive App zur Bestandsaufnahme einer Wohnung – Räume, Gegenstände, Zustand und Statistiken.",
+    "url": "https://DEINE-DOMAIN.de/index.html",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Web",
+    "inLanguage": "de",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "EUR"
+    }
+  }
+  </script>
 </head>
 <body>
 
-<!-- ===== NAVIGATION ===== -->
-<nav>
-  <div class="nav-logo">🏠 <span>Inventar</span></div>
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchPage('rooms')">🏠 Räume</button>
-    <button class="nav-tab" onclick="switchPage('all')">📋 Alle Gegenstände</button>
-    <button class="nav-tab" onclick="switchPage('stats')">📊 Statistik</button>
-  </div>
-  <div class="nav-stats">
-    <span><strong id="stat-rooms">0</strong> Räume</span>
-    <span><strong id="stat-items">0</strong> Gegenstände</span>
-    <span title="Daten werden automatisch im Browser gespeichert" style="cursor:default">💾 Auto-Speichern</span>
-  </div>
-</nav>
+  <!-- Navigation (wird per nav.js gerendert) -->
+  <nav id="main-nav"></nav>
 
-<!-- ===== MAIN CONTENT ===== -->
-<main>
-
-  <!-- RÄUME ÜBERSICHT -->
-  <div id="page-rooms" class="page active">
-    <div class="section-header">
+  <main>
+    <div class="page-header">
       <div>
-        <div class="section-title">Meine Wohnung</div>
-        <div class="section-sub">Übersicht aller Räume und ihr Inventar</div>
+        <h1 class="section-title">Meine Wohnung</h1>
+        <p class="section-sub">Übersicht aller Räume und ihr Inventar</p>
       </div>
       <button class="btn btn-primary" onclick="openAddRoom()">＋ Raum hinzufügen</button>
     </div>
+
     <div class="rooms-grid" id="rooms-grid"></div>
-  </div>
+  </main>
 
-  <!-- RAUM DETAIL -->
-  <div id="page-room-detail" class="page">
-    <div class="breadcrumb">
-      <a onclick="switchPage('rooms')">🏠 Räume</a> › <span id="room-detail-name">–</span>
-    </div>
-    <div class="section-header">
-      <div>
-        <div class="section-title" id="room-detail-title">–</div>
-        <div class="section-sub" id="room-detail-sub">–</div>
-      </div>
-      <div class="btn-group">
-        <button class="btn btn-secondary btn-sm" onclick="editCurrentRoom()">✏️ Raum bearbeiten</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteCurrentRoom()">🗑 Raum löschen</button>
-        <button class="btn btn-primary" onclick="openAddItem()">＋ Gegenstand hinzufügen</button>
-      </div>
-    </div>
-    <div class="toolbar">
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="text" placeholder="Gegenstände suchen…" oninput="filterRoomItems(this.value)" id="room-search">
-      </div>
-      <select class="filter-select" onchange="filterByCondition(this.value)">
-        <option value="">Alle Zustände</option>
-        <option value="Gut">✅ Gut</option>
-        <option value="Mittel">⚠️ Mittel</option>
-        <option value="Schlecht">❌ Schlecht</option>
-      </select>
-      <div class="view-toggle">
-        <button class="view-btn active" id="vbtn-grid" onclick="setView('grid')" title="Kachelansicht">⊞</button>
-        <button class="view-btn" id="vbtn-list" onclick="setView('list')" title="Listenansicht">☰</button>
-      </div>
-    </div>
-    <div id="room-items-container"></div>
-  </div>
-
-  <!-- ALLE GEGENSTÄNDE -->
-  <div id="page-all" class="page">
-    <div class="section-header">
-      <div>
-        <div class="section-title">Alle Gegenstände</div>
-        <div class="section-sub">Vollständiges Inventar der gesamten Wohnung</div>
-      </div>
-    </div>
-    <div class="toolbar">
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="text" placeholder="Gegenstände suchen…" oninput="filterAllItems(this.value)">
-      </div>
-      <select class="filter-select" onchange="filterAllByRoom(this.value)" id="room-filter-select">
-        <option value="">Alle Räume</option>
-      </select>
-      <select class="filter-select" onchange="filterAllByCondition(this.value)">
-        <option value="">Alle Zustände</option>
-        <option value="Gut">✅ Gut</option>
-        <option value="Mittel">⚠️ Mittel</option>
-        <option value="Schlecht">❌ Schlecht</option>
-      </select>
-      <div class="view-toggle">
-        <button class="view-btn active" id="avbtn-grid" onclick="setAllView('grid')" title="Kacheln">⊞</button>
-        <button class="view-btn" id="avbtn-list" onclick="setAllView('list')" title="Liste">☰</button>
-      </div>
-    </div>
-    <div id="all-items-container"></div>
-  </div>
-
-  <!-- STATISTIK -->
-  <div id="page-stats" class="page">
-    <div class="section-header">
-      <div class="section-title">Statistik & Übersicht</div>
-    </div>
-    <div class="stats-grid" id="stats-cards"></div>
-    <div class="chart-row">
-      <div class="chart-card">
-        <div class="chart-title">Gegenstände pro Raum</div>
-        <div id="chart-rooms"></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">Zustand der Gegenstände</div>
-        <div id="chart-conditions"></div>
-      </div>
-    </div>
-  </div>
-
-</main>
-
-<!-- ===== RAUM MODAL ===== -->
-<div id="room-modal" class="modal-overlay" style="display:none" onclick="closeRoomModal(event)">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title" id="room-modal-title">Raum hinzufügen</div>
-    <div class="form-group">
-      <label class="form-label">Name des Raums</label>
-      <input type="text" class="form-input" id="rm-name" placeholder="z.B. Wohnzimmer">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Icon wählen</label>
-      <div class="icon-picker" id="room-icon-picker"></div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Farbe</label>
-      <div class="color-picker-row" id="room-color-picker"></div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Notizen</label>
-      <input type="text" class="form-input" id="rm-notes" placeholder="Optionale Notizen…">
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeRoomModal()">Abbrechen</button>
-      <button class="btn btn-primary" onclick="saveRoom()">Speichern</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== GEGENSTAND MODAL ===== -->
-<div id="item-modal" class="modal-overlay" style="display:none" onclick="closeItemModal(event)">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title" id="item-modal-title">Gegenstand hinzufügen</div>
-    <div class="form-group">
-      <label class="form-label">Name</label>
-      <input type="text" class="form-input" id="it-name" placeholder="z.B. Sofa, Tisch, Lampe…">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Icon wählen</label>
-      <div class="icon-picker" id="item-icon-picker"></div>
-    </div>
-    <div class="form-row">
+  <!-- Raum-Modal -->
+  <div id="room-modal" class="modal-overlay" style="display:none" onclick="closeRoomModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-title" id="room-modal-title">Raum hinzufügen</div>
       <div class="form-group">
-        <label class="form-label">Anzahl</label>
-        <input type="number" class="form-input" id="it-qty" value="1" min="1">
+        <label class="form-label">Name des Raums</label>
+        <input type="text" class="form-input" id="rm-name" placeholder="z.B. Wohnzimmer">
       </div>
       <div class="form-group">
-        <label class="form-label">Zustand</label>
-        <select class="form-input" id="it-condition">
-          <option value="Gut">✅ Gut</option>
-          <option value="Mittel">⚠️ Mittel</option>
-          <option value="Schlecht">❌ Schlecht</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Kategorie</label>
-        <select class="form-input" id="it-cat">
-          <option>Möbel</option>
-          <option>Elektro</option>
-          <option>Küche</option>
-          <option>Bad</option>
-          <option>Beleuchtung</option>
-          <option>Dekoration</option>
-          <option>Textilien</option>
-          <option>Werkzeug</option>
-          <option>Sport</option>
-          <option>Sonstiges</option>
-        </select>
+        <label class="form-label">Icon wählen</label>
+        <div class="icon-picker" id="room-icon-picker"></div>
       </div>
       <div class="form-group">
-        <label class="form-label">Kaufjahr</label>
-        <input type="number" class="form-input" id="it-year" placeholder="z.B. 2020">
+        <label class="form-label">Farbe</label>
+        <div class="color-picker-row" id="room-color-picker"></div>
       </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Hersteller / Marke</label>
-      <input type="text" class="form-input" id="it-brand" placeholder="z.B. IKEA, Bosch…">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Notizen</label>
-      <input type="text" class="form-input" id="it-notes" placeholder="Seriennummer, Besonderheiten…">
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeItemModal()">Abbrechen</button>
-      <button class="btn btn-primary" onclick="saveItem()">Speichern</button>
+      <div class="form-group">
+        <label class="form-label">Notizen</label>
+        <input type="text" class="form-input" id="rm-notes" placeholder="Optionale Notizen…">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeRoomModal()">Abbrechen</button>
+        <button class="btn btn-primary" onclick="saveRoom()">Speichern</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ===== TOAST ===== -->
-<div id="toast" class="toast"></div>
+  <div id="toast" class="toast"></div>
 
-<!-- ===== SCRIPTS (Reihenfolge wichtig!) ===== -->
-<script src="js/data.js"></script>
-<script src="js/storage.js"></script>
-<script src="js/render.js"></script>
-<script src="js/modals.js"></script>
-<script src="js/stats.js"></script>
-<script src="js/app.js"></script>
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/modals.js"></script>
+  <script>
+    // ── Räume-Seite ──────────────────────────
+    let editingRoomId    = null;
+    let selectedRoomIcon = ROOM_ICONS[0];
+    let selectedRoomColor = COLORS[0];
+
+    function renderRooms() {
+      const grid = document.getElementById('rooms-grid');
+      grid.innerHTML = '';
+      state.rooms.forEach(room => {
+        const items = state.items.filter(i => i.roomId === room.id);
+        const cats  = [...new Set(items.map(i => i.category))].slice(0, 3);
+        const card  = document.createElement('div');
+        card.className = 'room-card';
+        card.style.setProperty('--room-color', room.color);
+        card.innerHTML = `
+          <span class="room-icon">${room.icon}</span>
+          <div class="room-name">${room.name}</div>
+          <div class="room-count"><strong>${items.length}</strong> Gegenstände</div>
+          <div class="room-tags">${cats.map(c => `<span class="room-tag">${c}</span>`).join('')}</div>
+        `;
+        card.onclick = () => { window.location.href = `room.html?id=${room.id}`; };
+        grid.appendChild(card);
+      });
+      const add = document.createElement('button');
+      add.className = 'add-room-card';
+      add.innerHTML = `<span style="font-size:1.8rem">＋</span><span>Raum hinzufügen</span>`;
+      add.onclick = openAddRoom;
+      grid.appendChild(add);
+    }
+
+    function saveRoom() {
+      const name = document.getElementById('rm-name').value.trim();
+      if (!name) { alert('Bitte einen Namen eingeben.'); return; }
+      if (editingRoomId) {
+        const r = state.rooms.find(x => x.id === editingRoomId);
+        Object.assign(r, { name, icon: selectedRoomIcon, color: selectedRoomColor, notes: document.getElementById('rm-notes').value });
+        showToast('Raum aktualisiert ✓');
+      } else {
+        state.rooms.push({ id: state.nextRoomId++, name, icon: selectedRoomIcon, color: selectedRoomColor, notes: document.getElementById('rm-notes').value });
+        showToast('Raum hinzugefügt ✓');
+      }
+      saveState();
+      closeRoomModal();
+      renderRooms();
+      updateNavStats();
+    }
+
+    // Init
+    initApp(() => { renderRooms(); });
+  </script>
 </body>
 </html>

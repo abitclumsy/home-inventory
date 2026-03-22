@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Raum – Wohnungs-Inventar</title>
+  <meta name="description" id="page-desc" content="Inventar dieses Raums.">
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Canonical wird per JS gesetzt (dynamische URL) -->
+  <link rel="canonical" id="canonical-tag" href="https://DEINE-DOMAIN.de/room.html">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- JSON-LD: CollectionPage für Raum-Inventar -->
+  <script type="application/ld+json" id="jsonld-room">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Raum-Inventar",
+    "url": "https://DEINE-DOMAIN.de/room.html",
+    "isPartOf": { "@type": "WebApplication", "name": "Wohnungs-Inventar" }
+  }
+  </script>
+</head>
+<body>
+
+  <nav id="main-nav"></nav>
+
+  <main>
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">🏠 Räume</a>
+      <span>›</span>
+      <span id="bc-room-name">–</span>
+    </nav>
+
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h1 class="section-title" id="room-title">–</h1>
+        <p class="section-sub" id="room-sub">–</p>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-secondary btn-sm" id="btn-edit-room" onclick="editThisRoom()">✏️ Bearbeiten</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteThisRoom()">🗑 Löschen</button>
+        <button class="btn btn-primary" onclick="openAddItem()">＋ Gegenstand</button>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="room-search" placeholder="Suchen…" oninput="onSearch(this.value)">
+      </div>
+      <select class="filter-select" onchange="onCondFilter(this.value)">
+        <option value="">Alle Zustände</option>
+        <option value="Gut">✅ Gut</option>
+        <option value="Mittel">⚠️ Mittel</option>
+        <option value="Schlecht">❌ Schlecht</option>
+      </select>
+      <div class="view-toggle">
+        <button class="view-btn active" id="vbtn-grid" onclick="setView('grid')" title="Kacheln">⊞</button>
+        <button class="view-btn" id="vbtn-list" onclick="setView('list')" title="Liste">☰</button>
+      </div>
+    </div>
+
+    <div id="items-container"></div>
+  </main>
+
+  <!-- Raum bearbeiten Modal -->
+  <div id="room-modal" class="modal-overlay" style="display:none" onclick="closeRoomModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-title">Raum bearbeiten</div>
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input type="text" class="form-input" id="rm-name" placeholder="z.B. Wohnzimmer">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Icon</label>
+        <div class="icon-picker" id="room-icon-picker"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Farbe</label>
+        <div class="color-picker-row" id="room-color-picker"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notizen</label>
+        <input type="text" class="form-input" id="rm-notes" placeholder="Optionale Notizen…">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeRoomModal()">Abbrechen</button>
+        <button class="btn btn-primary" onclick="saveRoomEdit()">Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gegenstand Modal -->
+  <div id="item-modal" class="modal-overlay" style="display:none" onclick="closeItemModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-title" id="item-modal-title">Gegenstand hinzufügen</div>
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input type="text" class="form-input" id="it-name" placeholder="z.B. Sofa, Tisch…">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Icon</label>
+        <div class="icon-picker" id="item-icon-picker"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Anzahl</label>
+          <input type="number" class="form-input" id="it-qty" value="1" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Zustand</label>
+          <select class="form-input" id="it-condition">
+            <option value="Gut">✅ Gut</option>
+            <option value="Mittel">⚠️ Mittel</option>
+            <option value="Schlecht">❌ Schlecht</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Kategorie</label>
+          <select class="form-input" id="it-cat">
+            <option>Möbel</option><option>Elektro</option><option>Küche</option>
+            <option>Bad</option><option>Beleuchtung</option><option>Dekoration</option>
+            <option>Textilien</option><option>Werkzeug</option><option>Sport</option><option>Sonstiges</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kaufjahr</label>
+          <input type="number" class="form-input" id="it-year" placeholder="z.B. 2020">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hersteller / Marke</label>
+        <input type="text" class="form-input" id="it-brand" placeholder="z.B. IKEA, Bosch…">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notizen</label>
+        <input type="text" class="form-input" id="it-notes" placeholder="Seriennummer…">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeItemModal()">Abbrechen</button>
+        <button class="btn btn-primary" onclick="saveItem()">Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/modals.js"></script>
+  <script>
+    // ── Raum-Detail-Seite ────────────────────
+    const params   = new URLSearchParams(window.location.search);
+    const ROOM_ID  = parseInt(params.get('id'));
+
+    let currentView  = 'grid';
+    let searchFilter = '';
+    let condFilter   = '';
+    let editingRoomId   = null;
+    let editingItemId   = null;
+    let selectedRoomIcon  = '';
+    let selectedRoomColor = '';
+    let selectedItemIcon  = ITEM_ICONS[0];
+    let currentRoomId     = ROOM_ID;
+
+    function condClass(c) {
+      return c === 'Gut' ? 'cond-gut' : c === 'Mittel' ? 'cond-mittel' : 'cond-schlecht';
+    }
+
+    function setPageMeta() {
+      const room = state.rooms.find(r => r.id === ROOM_ID);
+      if (!room) { window.location.href = 'index.html'; return; }
+      document.getElementById('page-title').textContent    = `${room.name} – Wohnungs-Inventar`;
+      document.getElementById('page-desc').content         = `Inventar für ${room.name}: alle Gegenstände, Zustand und Details.`;
+      document.getElementById('bc-room-name').textContent  = room.name;
+      document.getElementById('room-title').textContent    = room.icon + ' ' + room.name;
+      const total = state.items.filter(i => i.roomId === ROOM_ID).length;
+      document.getElementById('room-sub').textContent      = `${total} Gegenstände erfasst`;
+
+      // Canonical mit korrekter ID
+      const canonical = document.getElementById('canonical-tag');
+      canonical.href  = `https://DEINE-DOMAIN.de/room.html?id=${ROOM_ID}`;
+
+      // JSON-LD aktualisieren
+      const ld = document.getElementById('jsonld-room');
+      ld.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": `${room.name} – Inventar`,
+        "description": `Inventar für ${room.name}`,
+        "url": `https://DEINE-DOMAIN.de/room.html?id=${ROOM_ID}`,
+        "isPartOf": { "@type": "WebApplication", "name": "Wohnungs-Inventar" }
+      });
+    }
+
+    function renderItems() {
+      const container = document.getElementById('items-container');
+      container.innerHTML = '';
+      let items = state.items.filter(i => i.roomId === ROOM_ID);
+      if (searchFilter) items = items.filter(i => i.name.toLowerCase().includes(searchFilter));
+      if (condFilter)   items = items.filter(i => i.condition === condFilter);
+
+      if (!items.length) {
+        container.innerHTML = `<div class="empty"><div class="empty-icon">📦</div><p>Noch keine Gegenstände in diesem Raum.</p><br><button class="btn btn-primary" style="margin:1rem auto;display:inline-flex" onclick="openAddItem()">＋ Ersten Gegenstand hinzufügen</button></div>`;
+        return;
+      }
+
+      if (currentView === 'grid') {
+        const grid = document.createElement('div'); grid.className = 'items-grid';
+        items.forEach(item => {
+          const card = document.createElement('div'); card.className = 'item-card';
+          card.innerHTML = `
+            <div class="item-actions">
+              <button class="icon-btn icon-btn-edit" onclick="openEditItem(${item.id})">✏️</button>
+              <button class="icon-btn icon-btn-del"  onclick="deleteItem(${item.id})">🗑</button>
+            </div>
+            <span class="item-icon">${item.icon}</span>
+            <div class="item-name">${item.name}</div>
+            <div class="item-meta">${item.category}${item.brand ? ' · ' + item.brand : ''}</div>
+            <span class="item-qty">× ${item.qty}</span>
+            <span class="condition-badge ${condClass(item.condition)}">${item.condition}</span>
+            ${item.notes ? `<div class="item-meta" style="margin-top:.4rem;font-style:italic">${item.notes}</div>` : ''}
+          `;
+          grid.appendChild(card);
+        });
+        container.appendChild(grid);
+      } else {
+        const list = document.createElement('div'); list.className = 'items-list';
+        items.forEach(item => {
+          const row = document.createElement('div'); row.className = 'list-item';
+          row.innerHTML = `
+            <span class="list-icon">${item.icon}</span>
+            <div class="list-info">
+              <div class="list-name">${item.name}</div>
+              <div class="list-sub">${item.category}${item.brand ? ' · ' + item.brand : ''}${item.year ? ' · ' + item.year : ''}</div>
+            </div>
+            <span class="item-qty" style="flex-shrink:0">× ${item.qty}</span>
+            <span class="condition-badge ${condClass(item.condition)}" style="flex-shrink:0">${item.condition}</span>
+            <div class="list-actions">
+              <button class="icon-btn icon-btn-edit" onclick="openEditItem(${item.id})">✏️</button>
+              <button class="icon-btn icon-btn-del"  onclick="deleteItem(${item.id})">🗑</button>
+            </div>
+          `;
+          list.appendChild(row);
+        });
+        container.appendChild(list);
+      }
+    }
+
+    function onSearch(v) { searchFilter = v.toLowerCase(); renderItems(); }
+    function onCondFilter(v) { condFilter = v; renderItems(); }
+
+    function setView(v) {
+      currentView = v;
+      document.getElementById('vbtn-grid').classList.toggle('active', v === 'grid');
+      document.getElementById('vbtn-list').classList.toggle('active', v === 'list');
+      renderItems();
+    }
+
+    function editThisRoom() {
+      const room = state.rooms.find(r => r.id === ROOM_ID);
+      editingRoomId     = ROOM_ID;
+      selectedRoomIcon  = room.icon;
+      selectedRoomColor = room.color;
+      document.getElementById('rm-name').value  = room.name;
+      document.getElementById('rm-notes').value = room.notes || '';
+      buildRoomIconPicker(); buildRoomColorPicker();
+      document.getElementById('room-modal').style.display = 'flex';
+    }
+
+    function saveRoomEdit() {
+      const name = document.getElementById('rm-name').value.trim();
+      if (!name) { alert('Bitte Namen eingeben.'); return; }
+      const room = state.rooms.find(r => r.id === ROOM_ID);
+      Object.assign(room, { name, icon: selectedRoomIcon, color: selectedRoomColor, notes: document.getElementById('rm-notes').value });
+      saveState(); closeRoomModal(); setPageMeta(); renderItems(); showToast('Raum aktualisiert ✓');
+    }
+
+    function deleteThisRoom() {
+      const room = state.rooms.find(r => r.id === ROOM_ID);
+      if (!confirm(`Raum "${room?.name}" und alle Gegenstände löschen?`)) return;
+      state.rooms = state.rooms.filter(r => r.id !== ROOM_ID);
+      state.items = state.items.filter(i => i.roomId !== ROOM_ID);
+      saveState();
+      window.location.href = 'index.html';
+    }
+
+    function saveItem() {
+      const name = document.getElementById('it-name').value.trim();
+      if (!name) { alert('Bitte Namen eingeben.'); return; }
+      const data = {
+        name, icon: selectedItemIcon,
+        qty: parseInt(document.getElementById('it-qty').value) || 1,
+        condition: document.getElementById('it-condition').value,
+        category:  document.getElementById('it-cat').value,
+        brand:     document.getElementById('it-brand').value.trim(),
+        year:      parseInt(document.getElementById('it-year').value) || null,
+        notes:     document.getElementById('it-notes').value.trim(),
+      };
+      if (editingItemId) {
+        Object.assign(state.items.find(i => i.id === editingItemId), data);
+        showToast('Gegenstand aktualisiert ✓');
+      } else {
+        state.items.push({ id: state.nextItemId++, roomId: ROOM_ID, ...data });
+        showToast('Gegenstand hinzugefügt ✓');
+      }
+      saveState(); closeItemModal(); setPageMeta(); renderItems(); updateNavStats();
+    }
+
+    function deleteItem(itemId) {
+      if (!confirm('Gegenstand löschen?')) return;
+      state.items = state.items.filter(i => i.id !== itemId);
+      saveState(); setPageMeta(); renderItems(); updateNavStats(); showToast('Gegenstand gelöscht');
+    }
+
+    // Init
+    initApp(() => {
+      if (!ROOM_ID || !state.rooms.find(r => r.id === ROOM_ID)) {
+        window.location.href = 'index.html'; return;
+      }
+      setPageMeta();
+      renderItems();
+    });
+  </script>
+</body>
+</html>

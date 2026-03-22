@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alle Gegenstände – Wohnungs-Inventar</title>
+  <meta name="description" content="Vollständiges Inventar aller Gegenstände in der Wohnung.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://DEINE-DOMAIN.de/alle-gegenstaende.html">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Alle Gegenstände – Wohnungs-Inventar",
+    "description": "Vollständige Inventarliste aller Gegenstände in der Wohnung.",
+    "url": "https://DEINE-DOMAIN.de/alle-gegenstaende.html",
+    "isPartOf": { "@type": "WebApplication", "name": "Wohnungs-Inventar" }
+  }
+  </script>
+</head>
+<body>
+
+  <nav id="main-nav"></nav>
+
+  <main>
+    <div class="page-header">
+      <div>
+        <h1 class="section-title">Alle Gegenstände</h1>
+        <p class="section-sub">Vollständiges Inventar der gesamten Wohnung</p>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Gegenstände suchen…" oninput="onSearch(this.value)">
+      </div>
+      <select class="filter-select" onchange="onRoomFilter(this.value)" id="room-filter-select">
+        <option value="">Alle Räume</option>
+      </select>
+      <select class="filter-select" onchange="onCondFilter(this.value)">
+        <option value="">Alle Zustände</option>
+        <option value="Gut">✅ Gut</option>
+        <option value="Mittel">⚠️ Mittel</option>
+        <option value="Schlecht">❌ Schlecht</option>
+      </select>
+      <div class="view-toggle">
+        <button class="view-btn active" id="vbtn-grid" onclick="setView('grid')">⊞</button>
+        <button class="view-btn" id="vbtn-list" onclick="setView('list')">☰</button>
+      </div>
+    </div>
+
+    <div id="items-container"></div>
+  </main>
+
+  <!-- Item-Modal -->
+  <div id="item-modal" class="modal-overlay" style="display:none" onclick="closeItemModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-title" id="item-modal-title">Gegenstand bearbeiten</div>
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input type="text" class="form-input" id="it-name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Icon</label>
+        <div class="icon-picker" id="item-icon-picker"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Anzahl</label>
+          <input type="number" class="form-input" id="it-qty" value="1" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Zustand</label>
+          <select class="form-input" id="it-condition">
+            <option value="Gut">✅ Gut</option>
+            <option value="Mittel">⚠️ Mittel</option>
+            <option value="Schlecht">❌ Schlecht</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Kategorie</label>
+          <select class="form-input" id="it-cat">
+            <option>Möbel</option><option>Elektro</option><option>Küche</option>
+            <option>Bad</option><option>Beleuchtung</option><option>Dekoration</option>
+            <option>Textilien</option><option>Werkzeug</option><option>Sport</option><option>Sonstiges</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kaufjahr</label>
+          <input type="number" class="form-input" id="it-year">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Marke</label>
+        <input type="text" class="form-input" id="it-brand">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notizen</label>
+        <input type="text" class="form-input" id="it-notes">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeItemModal()">Abbrechen</button>
+        <button class="btn btn-primary" onclick="saveItem()">Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/modals.js"></script>
+  <script>
+    let searchFilter = '';
+    let roomFilter   = '';
+    let condFilter   = '';
+    let currentView  = 'grid';
+    let editingItemId   = null;
+    let selectedItemIcon = ITEM_ICONS[0];
+    let currentRoomId    = null;
+
+    function condClass(c) {
+      return c === 'Gut' ? 'cond-gut' : c === 'Mittel' ? 'cond-mittel' : 'cond-schlecht';
+    }
+
+    function buildRoomFilter() {
+      const sel = document.getElementById('room-filter-select');
+      sel.innerHTML = '<option value="">Alle Räume</option>';
+      state.rooms.forEach(r => {
+        const o = document.createElement('option');
+        o.value = r.id; o.textContent = r.icon + ' ' + r.name;
+        sel.appendChild(o);
+      });
+    }
+
+    function renderItems() {
+      const container = document.getElementById('items-container');
+      container.innerHTML = '';
+      let items = [...state.items];
+      if (searchFilter) items = items.filter(i => i.name.toLowerCase().includes(searchFilter));
+      if (roomFilter)   items = items.filter(i => i.roomId == roomFilter);
+      if (condFilter)   items = items.filter(i => i.condition === condFilter);
+
+      if (!items.length) {
+        container.innerHTML = `<div class="empty"><div class="empty-icon">📋</div><p>Keine Gegenstände gefunden.</p></div>`;
+        return;
+      }
+
+      if (currentView === 'grid') {
+        const grid = document.createElement('div'); grid.className = 'items-grid';
+        items.forEach(item => {
+          const room = state.rooms.find(r => r.id === item.roomId);
+          const card = document.createElement('div'); card.className = 'item-card';
+          card.innerHTML = `
+            <div class="item-actions">
+              <button class="icon-btn icon-btn-edit" onclick="openEditItem(${item.id})">✏️</button>
+              <button class="icon-btn icon-btn-del"  onclick="deleteItem(${item.id})">🗑</button>
+            </div>
+            <span class="item-icon">${item.icon}</span>
+            <div class="item-name">${item.name}</div>
+            <div class="item-meta">${item.category}${item.brand ? ' · ' + item.brand : ''}${room ? '<br>📍 ' + room.icon + ' ' + room.name : ''}</div>
+            <span class="item-qty">× ${item.qty}</span>
+            <span class="condition-badge ${condClass(item.condition)}">${item.condition}</span>
+          `;
+          grid.appendChild(card);
+        });
+        container.appendChild(grid);
+      } else {
+        const list = document.createElement('div'); list.className = 'items-list';
+        items.forEach(item => {
+          const room = state.rooms.find(r => r.id === item.roomId);
+          const row  = document.createElement('div'); row.className = 'list-item';
+          row.innerHTML = `
+            <span class="list-icon">${item.icon}</span>
+            <div class="list-info">
+              <div class="list-name">${item.name}</div>
+              <div class="list-sub">${item.category}${item.brand ? ' · ' + item.brand : ''}${item.year ? ' · ' + item.year : ''}${room ? ' · 📍 ' + room.name : ''}</div>
+            </div>
+            <span class="item-qty" style="flex-shrink:0">× ${item.qty}</span>
+            <span class="condition-badge ${condClass(item.condition)}" style="flex-shrink:0">${item.condition}</span>
+            <div class="list-actions">
+              <button class="icon-btn icon-btn-edit" onclick="openEditItem(${item.id})">✏️</button>
+              <button class="icon-btn icon-btn-del"  onclick="deleteItem(${item.id})">🗑</button>
+            </div>
+          `;
+          list.appendChild(row);
+        });
+        container.appendChild(list);
+      }
+    }
+
+    function onSearch(v) { searchFilter = v.toLowerCase(); renderItems(); }
+    function onRoomFilter(v) { roomFilter = v; renderItems(); }
+    function onCondFilter(v) { condFilter = v; renderItems(); }
+
+    function setView(v) {
+      currentView = v;
+      document.getElementById('vbtn-grid').classList.toggle('active', v === 'grid');
+      document.getElementById('vbtn-list').classList.toggle('active', v === 'list');
+      renderItems();
+    }
+
+    function saveItem() {
+      const name = document.getElementById('it-name').value.trim();
+      if (!name) { alert('Bitte Namen eingeben.'); return; }
+      const data = {
+        name, icon: selectedItemIcon,
+        qty: parseInt(document.getElementById('it-qty').value) || 1,
+        condition: document.getElementById('it-condition').value,
+        category:  document.getElementById('it-cat').value,
+        brand:     document.getElementById('it-brand').value.trim(),
+        year:      parseInt(document.getElementById('it-year').value) || null,
+        notes:     document.getElementById('it-notes').value.trim(),
+      };
+      if (editingItemId) {
+        Object.assign(state.items.find(i => i.id === editingItemId), data);
+        showToast('Gegenstand aktualisiert ✓');
+      }
+      saveState(); closeItemModal(); renderItems(); updateNavStats();
+    }
+
+    function deleteItem(itemId) {
+      if (!confirm('Gegenstand löschen?')) return;
+      state.items = state.items.filter(i => i.id !== itemId);
+      saveState(); renderItems(); updateNavStats(); showToast('Gegenstand gelöscht');
+    }
+
+    initApp(() => { buildRoomFilter(); renderItems(); });
+  </script>
+</body>
+</html>
