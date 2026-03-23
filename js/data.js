@@ -58,6 +58,7 @@ const DEFAULT_STATE = {
   ],
   nextRoomId: 9,
   nextItemId: 16,
+  trash: [],  // { id, type: 'room'|'item', data, deletedAt, roomData (bei room auch items) }
 };
 
 // Aktiver App-State (wird von storage.js befüllt)

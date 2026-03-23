@@ -703,3 +703,111 @@ nav.breadcrumb a:hover { text-decoration: underline; }
   .footer-bottom { padding: 1rem 1.25rem; flex-direction: column; align-items: flex-start; gap: 0.2rem; }
   .footer-sep    { display: none; }
 }
+
+/* ============================================
+   GLOBALE SUCHE
+   ============================================ */
+.nav-search-box {
+  position: relative;
+}
+
+.nav-search-box input {
+  padding: .38rem 1rem .38rem 2rem;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  font-family: inherit;
+  font-size: .82rem;
+  color: var(--text);
+  width: 180px;
+  transition: width .25s, border .2s;
+}
+
+.nav-search-box input:focus {
+  outline: none;
+  border-color: var(--accent);
+  width: 240px;
+  background: var(--card);
+}
+
+.nav-search-icon {
+  position: absolute;
+  left: .65rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: .8rem;
+  pointer-events: none;
+}
+
+.nav-search-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 320px;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 8px 28px var(--shadow);
+  z-index: 300;
+  overflow: hidden;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.search-section-label {
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--text2);
+  padding: .6rem 1rem .3rem;
+  background: var(--bg2);
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .65rem 1rem;
+  text-decoration: none;
+  color: var(--text);
+  transition: background .15s;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: var(--bg2); }
+
+.search-result-icon  { font-size: 1.3rem; flex-shrink: 0; }
+.search-result-info  { flex: 1; min-width: 0; }
+.search-result-name  { font-size: .87rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.search-result-meta  { font-size: .73rem; color: var(--text2); margin-top: 1px; }
+.search-result-badge { font-size: .68rem; font-weight: 600; background: var(--bg2); border-radius: 6px; padding: .1rem .45rem; flex-shrink: 0; color: var(--text2); }
+
+.search-no-results { padding: 1rem; font-size: .85rem; color: var(--text2); text-align: center; }
+
+mark.search-highlight { background: rgba(196,98,45,.18); color: var(--accent); border-radius: 2px; font-style: normal; }
+
+/* Papierkorb-Badge in Nav */
+.nav-trash-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--red);
+  color: #fff;
+  border-radius: 10px;
+  font-size: .65rem;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+/* Mobile Suche */
+@media (max-width: 640px) {
+  .nav-search-box input { width: 140px; }
+  .nav-search-box input:focus { width: 160px; }
+  .nav-search-results { width: calc(100vw - 2rem); right: -1rem; }
+}

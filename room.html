@@ -166,6 +166,7 @@
   <script src="js/storage.js"></script>
   <script src="js/nav.js"></script>
   <script src="js/modals.js"></script>
+  <script src="js/trash.js"></script>
   <script>
     // ── Raum-Detail-Seite ────────────────────
     const params   = new URLSearchParams(window.location.search);
@@ -296,10 +297,8 @@
 
     function deleteThisRoom() {
       const room = state.rooms.find(r => r.id === ROOM_ID);
-      if (!confirm(`Raum "${room?.name}" und alle Gegenstände löschen?`)) return;
-      state.rooms = state.rooms.filter(r => r.id !== ROOM_ID);
-      state.items = state.items.filter(i => i.roomId !== ROOM_ID);
-      saveState();
+      if (!confirm(`Raum "${room?.name}" in den Papierkorb verschieben?`)) return;
+      trashRoom(ROOM_ID);
       window.location.href = 'index.html';
     }
 
@@ -326,9 +325,9 @@
     }
 
     function deleteItem(itemId) {
-      if (!confirm('Gegenstand löschen?')) return;
-      state.items = state.items.filter(i => i.id !== itemId);
-      saveState(); setPageMeta(); renderItems(); updateNavStats(); showToast('Gegenstand gelöscht');
+      if (!confirm('Gegenstand in den Papierkorb verschieben?')) return;
+      trashItem(itemId);
+      setPageMeta(); renderItems(); updateNavStats();
     }
 
     // Init

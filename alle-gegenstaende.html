@@ -126,6 +126,7 @@
   <script src="js/storage.js"></script>
   <script src="js/nav.js"></script>
   <script src="js/modals.js"></script>
+  <script src="js/trash.js"></script>
   <script>
     let searchFilter = '';
     let roomFilter   = '';
@@ -236,9 +237,9 @@
     }
 
     function deleteItem(itemId) {
-      if (!confirm('Gegenstand löschen?')) return;
-      state.items = state.items.filter(i => i.id !== itemId);
-      saveState(); renderItems(); updateNavStats(); showToast('Gegenstand gelöscht');
+      if (!confirm('Gegenstand in den Papierkorb verschieben?')) return;
+      trashItem(itemId);
+      renderItems(); updateNavStats();
     }
 
     initApp(() => { buildRoomFilter(); renderItems(); });
