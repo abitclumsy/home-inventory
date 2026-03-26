@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback & Vorschläge – Wohnungs-Inventar</title>
+  <meta name="description" content="Gesammelte Vorschläge und Feedback zur Verbesserung des Wohnungs-Inventars.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://abitclumsy.github.io/home-inventory/feedback.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .feedback-grid  { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+
+    .fb-card        { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 1.25rem 1.5rem; transition: box-shadow .2s; }
+    .fb-card:hover  { box-shadow: 0 4px 16px var(--shadow); }
+
+    .fb-text        { font-size: .92rem; color: var(--text); line-height: 1.6; margin-bottom: .75rem; }
+    .fb-meta        { display: flex; align-items: center; gap: .6rem; font-size: .75rem; color: var(--text2); flex-wrap: wrap; }
+    .fb-author      { display: inline-flex; align-items: center; gap: .4rem; font-weight: 600; color: var(--text); }
+    .fb-author-dot  { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .fb-date        { margin-left: auto; }
+
+    .fb-empty       { text-align: center; padding: 4rem 1rem; color: var(--text2); }
+    .fb-empty-icon  { font-size: 3rem; margin-bottom: 1rem; opacity: .4; display: block; }
+
+    .fb-stats       { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .fb-stat        { background: var(--card); border: 1.5px solid var(--border); border-radius: 10px; padding: .6rem 1rem; font-size: .82rem; color: var(--text2); }
+    .fb-stat strong { color: var(--accent); }
+
+    .fb-filter      { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body>
+  <nav id="main-nav"></nav>
+
+  <main>
+    <div class="page-header">
+      <div>
+        <h1 class="section-title">💬 Feedback & Vorschläge</h1>
+        <p class="section-sub">Alle eingereichten Ideen zur Verbesserung der App</p>
+      </div>
+    </div>
+
+    <div class="fb-stats" id="fb-stats"></div>
+
+    <div class="fb-filter">
+      <div class="search-box" style="min-width:220px">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Feedback durchsuchen…" oninput="filterFeedback(this.value)">
+      </div>
+      <select class="filter-select" onchange="filterByAuthor(this.value)" id="author-filter">
+        <option value="">Alle Nutzer</option>
+      </select>
+    </div>
+
+    <div id="feedback-container"></div>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    let allFeedback = [];
+    let searchFilter = '';
+    let authorFilter = '';
+
+    async function loadFeedback() {
+      const container = document.getElementById('feedback-container');
+      container.innerHTML = `<div class="fb-empty"><span class="fb-empty-icon">⏳</span><p>Lädt…</p></div>`;
+      try {
+        const snap = await firebase.firestore()
+          .collection('feedback')
+          .orderBy('createdAt', 'desc')
+          .get();
+
+        allFeedback = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        buildAuthorFilter();
+        renderFeedback();
+      } catch(err) {
+        container.innerHTML = `<div class="fb-empty"><span class="fb-empty-icon">⚠️</span><p>Feedback konnte nicht geladen werden.</p></div>`;
+        console.warn(err);
+      }
+    }
+
+    function buildAuthorFilter() {
+      const sel = document.getElementById('author-filter');
+      const authors = [...new Set(allFeedback.map(f => f.authorName).filter(Boolean))];
+      sel.innerHTML = '<option value="">Alle Nutzer</option>';
+      authors.forEach(a => {
+        const o = document.createElement('option');
+        o.value = a; o.textContent = a; sel.appendChild(o);
+      });
+    }
+
+    function renderFeedback() {
+      const container = document.getElementById('feedback-container');
+      let items = [...allFeedback];
+      if (searchFilter) items = items.filter(f => f.text.toLowerCase().includes(searchFilter));
+      if (authorFilter) items = items.filter(f => f.authorName === authorFilter);
+
+      // Stats
+      document.getElementById('fb-stats').innerHTML = `
+        <div class="fb-stat">Gesamt: <strong>${allFeedback.length}</strong></div>
+        <div class="fb-stat">Angezeigt: <strong>${items.length}</strong></div>
+        <div class="fb-stat">Nutzer: <strong>${new Set(allFeedback.map(f=>f.authorName)).size}</strong></div>
+      `;
+
+      if (!items.length) {
+        container.innerHTML = `<div class="fb-empty"><span class="fb-empty-icon">💬</span><p>${searchFilter || authorFilter ? 'Keine Einträge gefunden.' : 'Noch kein Feedback eingereicht.'}</p></div>`;
+        return;
+      }
+
+      const grid = document.createElement('div');
+      grid.className = 'feedback-grid';
+      items.forEach(fb => {
+        const date = fb.createdAt?.toDate
+          ? fb.createdAt.toDate().toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' })
+          : new Date(fb.createdAt).toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' });
+        const color = fb.authorColor || '#C4622D';
+        const initial = (fb.authorName || '?')[0].toUpperCase();
+
+        const card = document.createElement('div');
+        card.className = 'fb-card';
+        card.innerHTML = `
+          <div class="fb-text">${escapeHtml(fb.text)}</div>
+          <div class="fb-meta">
+            <span class="fb-author">
+              <span class="fb-author-dot" style="background:${color}">${initial}</span>
+              ${escapeHtml(fb.authorName || 'Anonym')}
+            </span>
+            <span class="fb-date">📅 ${date}</span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+      container.innerHTML = '';
+      container.appendChild(grid);
+    }
+
+    function filterFeedback(v) { searchFilter = v.toLowerCase(); renderFeedback(); }
+    function filterByAuthor(v) { authorFilter = v; renderFeedback(); }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    initApp(user => {
+      if (user) loadFeedback();
+      else {
+        document.getElementById('feedback-container').innerHTML = `
+          <div class="fb-empty">
+            <span class="fb-empty-icon">🔐</span>
+            <p>Bitte <a href="konto.html" style="color:var(--accent)">anmelden</a>, um Feedback zu sehen.</p>
+          </div>`;
+      }
+    });
+  </script>
+</body>
+</html>

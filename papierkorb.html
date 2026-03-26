@@ -11,32 +11,83 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <style>
-    .trash-empty    { text-align:center; padding:4rem 1rem; color:var(--text2); }
-    .trash-empty-icon { font-size:3.5rem; margin-bottom:1rem; opacity:.4; display:block; }
+    /* ── Papierkorb-Karten ───────────────────── */
+    .trash-section-label {
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--text2);
+      margin: 1.5rem 0 .6rem;
+      padding-bottom: .4rem;
+      border-bottom: 1px solid var(--border);
+    }
 
-    .trash-list     { display:flex; flex-direction:column; gap:.75rem; }
+    .trash-list { display: flex; flex-direction: column; gap: .6rem; }
 
-    .trash-card     { background:var(--card); border:1.5px solid var(--border); border-radius:12px; padding:1rem 1.25rem; display:flex; align-items:center; gap:1rem; transition:all .2s; }
-    .trash-card:hover { box-shadow:0 4px 14px var(--shadow); }
+    .trash-card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: all .2s;
+    }
+    .trash-card:hover { box-shadow: 0 4px 14px var(--shadow); border-color: var(--accent3); }
 
-    .trash-icon     { font-size:1.8rem; flex-shrink:0; }
-    .trash-info     { flex:1; min-width:0; }
-    .trash-name     { font-weight:700; font-size:.95rem; color:var(--text); }
-    .trash-meta     { font-size:.78rem; color:var(--text2); margin-top:2px; }
+    .trash-icon  { font-size: 1.8rem; flex-shrink: 0; }
+    .trash-info  { flex: 1; min-width: 0; }
+    .trash-name  { font-weight: 700; font-size: .95rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .trash-meta  { font-size: .76rem; color: var(--text2); margin-top: 2px; }
 
-    .trash-days     { display:inline-flex; align-items:center; gap:.3rem; border-radius:20px; padding:.15rem .6rem; font-size:.72rem; font-weight:700; flex-shrink:0; }
-    .trash-days--ok      { background:#fff7e0; color:#8a6500; }
-    .trash-days--warning { background:#fef0f0; color:#c0392b; }
+    .trash-countdown {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      border-radius: 20px;
+      padding: .2rem .7rem;
+      font-size: .72rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .trash-countdown--ok      { background: #fff7e0; color: #8a6500; }
+    .trash-countdown--warning { background: #fef0f0; color: #c0392b; }
+    .trash-countdown--urgent  { background: #c0392b; color: #fff; }
 
-    .trash-actions  { display:flex; gap:.5rem; flex-shrink:0; }
+    .trash-actions { display: flex; gap: .5rem; flex-shrink: 0; }
 
-    .section-divider { font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--text2); margin:1.5rem 0 .6rem; }
+    .trash-empty       { text-align: center; padding: 4rem 1rem; color: var(--text2); }
+    .trash-empty-icon  { font-size: 3.5rem; margin-bottom: 1rem; opacity: .35; display: block; }
+    .trash-empty p     { font-size: .9rem; }
 
-    .trash-header   { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem; }
+    .trash-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
 
-    @media(max-width:600px) {
-      .trash-card   { flex-wrap:wrap; }
-      .trash-actions { width:100%; justify-content:flex-end; }
+    .trash-info-box {
+      background: #fff7e0;
+      border: 1.5px solid #e8d590;
+      border-radius: 10px;
+      padding: .75rem 1rem;
+      font-size: .82rem;
+      color: #7a6200;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+
+    @media (max-width: 600px) {
+      .trash-card    { flex-wrap: wrap; gap: .6rem; }
+      .trash-actions { width: 100%; justify-content: flex-end; }
     }
   </style>
 </head>
@@ -45,20 +96,30 @@
   <nav id="main-nav"></nav>
 
   <main>
-    <div class="trash-header">
+    <div class="trash-topbar">
       <div>
         <h1 class="section-title">🗑 Papierkorb</h1>
         <p class="section-sub">Gelöschte Einträge werden 30 Tage aufbewahrt</p>
       </div>
-      <button class="btn btn-danger" onclick="emptyTrashAndRender()">🗑 Papierkorb leeren</button>
+      <button class="btn btn-danger" onclick="doEmptyTrash()">🗑 Alles endgültig löschen</button>
     </div>
 
-    <!-- Suchleiste -->
-    <div class="toolbar" style="margin-bottom:1.5rem">
+    <div class="trash-info-box">
+      ⏳ Einträge im Papierkorb werden automatisch nach 30 Tagen endgültig gelöscht.
+      Du kannst sie bis dahin jederzeit wiederherstellen.
+    </div>
+
+    <!-- Suche -->
+    <div class="toolbar">
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input type="text" placeholder="Im Papierkorb suchen…" oninput="onTrashSearch(this.value)">
+        <input type="text" placeholder="Im Papierkorb suchen…" oninput="onSearch(this.value)">
       </div>
+      <select class="filter-select" onchange="onTypeFilter(this.value)">
+        <option value="">Alle Typen</option>
+        <option value="room">🏠 Räume</option>
+        <option value="item">📦 Gegenstände</option>
+      </select>
     </div>
 
     <div id="trash-container"></div>
@@ -76,30 +137,27 @@
   <script src="js/trash.js"></script>
   <script>
 
-    let trashSearch = '';
+    let searchFilter = '';
+    let typeFilter   = '';
 
-    function onTrashSearch(v) { trashSearch = v.toLowerCase(); renderTrash(); }
+    function onSearch(v)     { searchFilter = v.toLowerCase(); renderTrash(); }
+    function onTypeFilter(v) { typeFilter   = v;               renderTrash(); }
 
     function renderTrash() {
       const container = document.getElementById('trash-container');
-      container.innerHTML = '';
-
       if (!state.trash) state.trash = [];
       cleanupTrash();
 
       let entries = [...state.trash].sort((a, b) => b.deletedAt - a.deletedAt);
-      if (trashSearch) {
-        entries = entries.filter(e => {
-          const name = e.type === 'room' ? e.data.name : e.data.name;
-          return name.toLowerCase().includes(trashSearch);
-        });
-      }
+      if (searchFilter) entries = entries.filter(e => e.data.name.toLowerCase().includes(searchFilter));
+      if (typeFilter)   entries = entries.filter(e => e.type === typeFilter);
 
       if (!entries.length) {
         container.innerHTML = `
           <div class="trash-empty">
             <span class="trash-empty-icon">🗑</span>
-            <p>${trashSearch ? 'Keine Einträge gefunden.' : 'Der Papierkorb ist leer.'}</p>
+            <p>${searchFilter || typeFilter ? 'Keine Einträge gefunden.' : 'Der Papierkorb ist leer.'}</p>
+            ${!searchFilter && !typeFilter ? `<br><a href="index.html" class="btn btn-secondary" style="display:inline-flex;margin:0 auto">← Zurück zur Übersicht</a>` : ''}
           </div>`;
         return;
       }
@@ -107,34 +165,41 @@
       const rooms = entries.filter(e => e.type === 'room');
       const items = entries.filter(e => e.type === 'item');
 
-      const list = document.createElement('div');
-      list.className = 'trash-list';
+      container.innerHTML = '';
 
       if (rooms.length) {
-        const div = document.createElement('div');
-        div.innerHTML = `<div class="section-divider">🏠 Räume (${rooms.length})</div>`;
-        rooms.forEach(entry => div.appendChild(buildTrashCard(entry)));
-        list.appendChild(div);
+        const section = document.createElement('div');
+        section.innerHTML = `<div class="trash-section-label">🏠 Gelöschte Räume (${rooms.length})</div>`;
+        const list = document.createElement('div');
+        list.className = 'trash-list';
+        rooms.forEach(entry => list.appendChild(buildCard(entry)));
+        section.appendChild(list);
+        container.appendChild(section);
       }
 
       if (items.length) {
-        const div = document.createElement('div');
-        div.innerHTML = `<div class="section-divider">📦 Gegenstände (${items.length})</div>`;
-        items.forEach(entry => div.appendChild(buildTrashCard(entry)));
-        list.appendChild(div);
+        const section = document.createElement('div');
+        section.innerHTML = `<div class="trash-section-label">📦 Gelöschte Gegenstände (${items.length})</div>`;
+        const list = document.createElement('div');
+        list.className = 'trash-list';
+        items.forEach(entry => list.appendChild(buildCard(entry)));
+        section.appendChild(list);
+        container.appendChild(section);
       }
-
-      container.appendChild(list);
     }
 
-    function buildTrashCard(entry) {
+    function buildCard(entry) {
       const days    = daysLeft(entry.deletedAt);
-      const daysCls = days <= 3 ? 'trash-days--warning' : 'trash-days--ok';
-      const deleted = new Date(entry.deletedAt).toLocaleDateString('de-DE');
+      const deleted = new Date(entry.deletedAt).toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' });
       const isRoom  = entry.type === 'room';
+
+      let countdownCls = 'trash-countdown--ok';
+      if (days <= 7)  countdownCls = 'trash-countdown--warning';
+      if (days <= 2)  countdownCls = 'trash-countdown--urgent';
+
       const itemCount = isRoom && entry.items ? ` · ${entry.items.length} Gegenstände` : '';
-      const roomName  = !isRoom && entry.data.roomId
-        ? (() => { const r = state.rooms.find(r => r.id === entry.data.roomId); return r ? ` · 📍 ${r.name}` : ''; })()
+      const roomInfo  = !isRoom && entry.data.roomId
+        ? (() => { const r = state.rooms.find(r => r.id === entry.data.roomId); return r ? ` · 📍 ${r.name}` : ' · Raum gelöscht'; })()
         : '';
 
       const card = document.createElement('div');
@@ -144,37 +209,43 @@
         <div class="trash-info">
           <div class="trash-name">${entry.data.name}</div>
           <div class="trash-meta">
-            ${isRoom ? 'Raum' : entry.data.category || 'Gegenstand'}${itemCount}${roomName}
-            · Gelöscht am ${deleted}
+            ${isRoom ? 'Raum' : (entry.data.category || 'Gegenstand')}${itemCount}${roomInfo}
+            &nbsp;·&nbsp; Gelöscht am ${deleted}
           </div>
         </div>
-        <span class="trash-days ${daysCls}">⏳ ${days} Tage</span>
+        <span class="trash-countdown ${countdownCls}">
+          ⏳ ${days} Tag${days !== 1 ? 'e' : ''}
+        </span>
         <div class="trash-actions">
-          <button class="btn btn-secondary btn-sm" onclick="restoreEntry('${entry.id}')">↩ Wiederherstellen</button>
-          <button class="btn btn-danger btn-sm"    onclick="deleteEntry('${entry.id}')">✕ Löschen</button>
+          <button class="btn btn-secondary btn-sm" onclick="doRestore('${entry.id}')">↩ Wiederherstellen</button>
+          <button class="btn btn-danger btn-sm"    onclick="doDelete('${entry.id}')">✕ Löschen</button>
         </div>
       `;
       return card;
     }
 
-    function restoreEntry(trashId) {
+    function doRestore(trashId) {
       restoreFromTrash(trashId);
       renderTrash();
       updateNavStats();
     }
 
-    function deleteEntry(trashId) {
+    function doDelete(trashId) {
       if (!confirm('Endgültig löschen? Das kann nicht rückgängig gemacht werden.')) return;
       permanentDelete(trashId);
       renderTrash();
     }
 
-    function emptyTrashAndRender() {
-      emptyTrash();
+    function doEmptyTrash() {
+      if (!state.trash || !state.trash.length) { showToast('Papierkorb ist bereits leer'); return; }
+      if (!confirm(`Alle ${state.trash.length} Einträge endgültig löschen? Das kann nicht rückgängig gemacht werden.`)) return;
+      state.trash = [];
+      saveState();
+      showToast('Papierkorb geleert 🗑');
       renderTrash();
     }
 
-    initApp(() => { cleanupTrash(); renderTrash(); });
+    initApp(() => { renderTrash(); });
   </script>
 </body>
 </html>

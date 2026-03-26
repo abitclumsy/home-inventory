@@ -811,3 +811,72 @@ mark.search-highlight { background: rgba(196,98,45,.18); color: var(--accent); b
   .nav-search-box input:focus { width: 160px; }
   .nav-search-results { width: calc(100vw - 2rem); right: -1rem; }
 }
+
+/* ============================================
+   FOOTER FEEDBACK-FORMULAR
+   ============================================ */
+.footer-inner--4col {
+  grid-template-columns: 1fr 1.4fr 1fr;
+}
+
+.footer-feedback { display: flex; flex-direction: column; }
+
+.footer-fb-textarea {
+  width: 100%;
+  padding: .6rem .9rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  font-family: inherit;
+  font-size: .82rem;
+  color: var(--text);
+  resize: vertical;
+  min-height: 80px;
+  transition: border .2s;
+}
+.footer-fb-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--card);
+}
+
+/* ============================================
+   PROFIL SEITE
+   ============================================ */
+.profile-wrap { max-width: 700px; margin: 2rem auto; padding: 0 1rem; display: flex; flex-direction: column; gap: 1.25rem; }
+
+.profile-hero { background: var(--card); border: 1.5px solid var(--border); border-radius: 20px; padding: 2rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+
+.profile-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 16px; padding: 1.75rem; }
+.profile-card-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 1.25rem; display: flex; align-items: center; gap: .5rem; }
+
+.avatar-colors { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .4rem; }
+.avatar-color-btn { width: 30px; height: 30px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: border .15s, transform .15s; }
+.avatar-color-btn.selected { border-color: var(--text) !important; transform: scale(1.15); }
+
+.profile-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; }
+.ps-card { background: var(--bg2); border-radius: 12px; padding: .9rem; text-align: center; }
+.ps-card strong { display: block; font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--accent); }
+.ps-card span   { font-size: .72rem; color: var(--text2); }
+
+.partner-hint { background: rgba(196,98,45,.06); border: 1.5px solid rgba(196,98,45,.2); border-radius: 12px; padding: 1rem 1.25rem; font-size: .82rem; color: var(--text2); line-height: 1.6; }
+
+@media(max-width:640px) {
+  .footer-inner--4col { grid-template-columns: 1fr; }
+  .profile-stats-grid { grid-template-columns: repeat(2,1fr); }
+  .profile-hero { flex-direction: column; text-align: center; }
+}
+
+/* Löschen-Button auf Raumkarten */
+.room-card-actions {
+  position: absolute;
+  top: .6rem;
+  right: .6rem;
+  opacity: 0;
+  transition: opacity .2s;
+}
+.room-card:hover .room-card-actions { opacity: 1; }
+
+@media (max-width: 640px) {
+  .room-card-actions { opacity: 1; }
+}

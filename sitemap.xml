@@ -37,6 +37,12 @@
     <priority>0.4</priority>
   </url>
 
+  <url>
+    <loc>https://abitclumsy.github.io/home-inventory/feedback.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
   <!--
     Raum-Seiten (room.html?id=X) werden NICHT in der Sitemap aufgeführt,
     da sie dynamisch aus den Nutzerdaten generiert werden.

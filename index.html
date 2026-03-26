@@ -117,6 +117,7 @@
   <script src="js/storage.js"></script>
   <script src="js/nav.js"></script>
   <script src="js/modals.js"></script>
+  <script src="js/trash.js"></script>
   <script>
     // ── Räume-Seite ──────────────────────────
     let editingRoomId    = null;
@@ -133,6 +134,9 @@
         card.className = 'room-card';
         card.style.setProperty('--room-color', room.color);
         card.innerHTML = `
+          <div class="room-card-actions">
+            <button class="icon-btn icon-btn-del" onclick="event.stopPropagation(); deleteRoom(${room.id})" title="In Papierkorb">🗑</button>
+          </div>
           <span class="room-icon">${room.icon}</span>
           <div class="room-name">${room.name}</div>
           <div class="room-count"><strong>${items.length}</strong> Gegenstände</div>
@@ -146,6 +150,14 @@
       add.innerHTML = `<span style="font-size:1.8rem">＋</span><span>Raum hinzufügen</span>`;
       add.onclick = openAddRoom;
       grid.appendChild(add);
+    }
+
+    function deleteRoom(roomId) {
+      const room = state.rooms.find(r => r.id === roomId);
+      if (!confirm(`„${room?.name}" in den Papierkorb verschieben?`)) return;
+      trashRoom(roomId);
+      renderRooms();
+      updateNavStats();
     }
 
     function saveRoom() {

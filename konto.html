@@ -4,139 +4,189 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Konto – Wohnungs-Inventar</title>
-  <meta name="description" content="Anmelden oder registrieren für geräteübergreifende Synchronisation.">
+  <meta name="description" content="Konto, Profil und Einstellungen für das Wohnungs-Inventar.">
   <meta name="robots" content="noindex, nofollow">
   <link rel="canonical" href="https://abitclumsy.github.io/home-inventory/konto.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <style>
-    .auth-wrap {
-      max-width: 440px;
-      margin: 3rem auto;
-      padding: 0 1rem;
-    }
-    .auth-card {
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: 20px;
-      padding: 2.5rem;
-      box-shadow: 0 8px 32px var(--shadow);
-    }
-    .auth-logo  { font-size: 2.8rem; text-align: center; display: block; margin-bottom: 0.5rem; }
-    .auth-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; text-align: center; color: var(--text); margin-bottom: 0.3rem; }
-    .auth-sub   { text-align: center; font-size: 0.83rem; color: var(--text2); margin-bottom: 2rem; line-height: 1.5; }
-
+    /* ── Auth ─────────────────────── */
+    .auth-wrap  { max-width: 480px; margin: 3rem auto; padding: 0 1rem; }
+    .auth-card  { background: var(--card); border: 1.5px solid var(--border); border-radius: 20px; padding: 2.5rem; box-shadow: 0 8px 32px var(--shadow); }
+    .auth-logo  { font-size: 2.8rem; text-align: center; display: block; margin-bottom: .5rem; }
+    .auth-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; text-align: center; color: var(--text); margin-bottom: .3rem; }
+    .auth-sub   { text-align: center; font-size: .83rem; color: var(--text2); margin-bottom: 2rem; line-height: 1.5; }
     .auth-tabs  { display: flex; background: var(--bg2); border-radius: 10px; padding: 3px; margin-bottom: 1.75rem; gap: 3px; }
-    .auth-tab   { flex: 1; padding: 0.55rem; border: none; background: none; border-radius: 8px; font-family: inherit; font-size: 0.875rem; font-weight: 600; color: var(--text2); cursor: pointer; transition: all .2s; }
+    .auth-tab   { flex: 1; padding: .55rem; border: none; background: none; border-radius: 8px; font-family: inherit; font-size: .875rem; font-weight: 600; color: var(--text2); cursor: pointer; transition: all .2s; }
     .auth-tab.active { background: var(--card); color: var(--accent); box-shadow: 0 1px 4px var(--shadow); }
-
-    .auth-error   { background: #fef0f0; border: 1.5px solid #fcc; color: #c0392b; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.83rem; line-height: 1.5; margin-bottom: 1.1rem; display: none; }
-    .auth-success { background: #e8f7ee; border: 1.5px solid #9fd4b5; color: #2d7a4f; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.83rem; margin-bottom: 1.1rem; display: none; }
-
-    .btn-auth { width: 100%; justify-content: center; padding: 0.75rem; font-size: 0.95rem; margin-top: 0.5rem; }
-    .btn-auth:disabled { opacity: 0.65; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
-
+    .auth-error   { background: #fef0f0; border: 1.5px solid #fcc; color: #c0392b; border-radius: 10px; padding: .75rem 1rem; font-size: .83rem; line-height: 1.5; margin-bottom: 1.1rem; display: none; }
+    .auth-success { background: #e8f7ee; border: 1.5px solid #9fd4b5; color: #2d7a4f; border-radius: 10px; padding: .75rem 1rem; font-size: .83rem; margin-bottom: 1.1rem; display: none; }
+    .btn-auth   { width: 100%; justify-content: center; padding: .75rem; font-size: .95rem; margin-top: .5rem; }
+    .btn-auth:disabled { opacity: .65; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
     .auth-forgot { text-align: center; margin-top: 1rem; }
-    .auth-forgot a { font-size: 0.8rem; color: var(--accent); cursor: pointer; }
+    .auth-forgot a { font-size: .8rem; color: var(--accent); cursor: pointer; }
     .auth-forgot a:hover { text-decoration: underline; }
 
-    /* Profil */
-    .profile-header { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; margin-bottom: 1.75rem; padding-bottom: 1.75rem; border-bottom: 1.5px solid var(--border); }
-    .profile-avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--accent); color: #fff; font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
-    .profile-name   { font-weight: 700; font-size: 1.05rem; color: var(--text); }
-    .profile-email  { font-size: 0.82rem; color: var(--text2); }
-    .profile-stats  { display: flex; gap: 1rem; margin-top: 0.5rem; }
-    .profile-stat   { flex: 1; background: var(--bg2); border-radius: 12px; padding: 0.9rem; text-align: center; }
-    .profile-stat strong { display: block; font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--accent); }
-    .profile-stat span   { font-size: 0.75rem; color: var(--text2); }
+    /* ── Profil ───────────────────── */
+    .profile-wrap  { max-width: 700px; margin: 2rem auto; padding: 0 1rem; display: flex; flex-direction: column; gap: 1.25rem; }
 
-    .sync-badge { display: flex; align-items: center; gap: 0.5rem; background: #e8f7ee; border: 1.5px solid #9fd4b5; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.82rem; color: #2d7a4f; margin-bottom: 1.5rem; }
-    .sync-dot   { width: 8px; height: 8px; border-radius: 50%; background: #2d7a4f; flex-shrink: 0; animation: blink 2s infinite; }
-    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.35; } }
+    .profile-hero  { background: var(--card); border: 1.5px solid var(--border); border-radius: 20px; padding: 2rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+    .profile-avatar-big {
+      width: 80px; height: 80px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700;
+      color: #fff; flex-shrink: 0; cursor: pointer; transition: transform .2s;
+    }
+    .profile-avatar-big:hover { transform: scale(1.05); }
+    .profile-hero-info { flex: 1; min-width: 200px; }
+    .profile-hero-name { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--text); }
+    .profile-hero-email { font-size: .82rem; color: var(--text2); margin-top: 2px; }
+    .profile-hero-role  { display: inline-block; margin-top: .5rem; padding: .2rem .75rem; border-radius: 20px; font-size: .75rem; font-weight: 700; background: var(--bg2); color: var(--text2); border: 1.5px solid var(--border); }
 
-    @media (max-width: 480px) { .auth-card { padding: 1.75rem 1.25rem; } }
+    .sync-badge  { display: flex; align-items: center; gap: .5rem; background: #e8f7ee; border: 1.5px solid #9fd4b5; border-radius: 10px; padding: .65rem 1rem; font-size: .82rem; color: #2d7a4f; }
+    .sync-dot    { width: 8px; height: 8px; border-radius: 50%; background: #2d7a4f; flex-shrink: 0; animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+    /* Profilkarte zum Bearbeiten */
+    .profile-card  { background: var(--card); border: 1.5px solid var(--border); border-radius: 16px; padding: 1.75rem; }
+    .profile-card-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 1.25rem; display: flex; align-items: center; gap: .5rem; }
+
+    /* Avatar Farbauswahl */
+    .avatar-colors { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .4rem; }
+    .avatar-color-btn {
+      width: 30px; height: 30px; border-radius: 50%; border: 3px solid transparent;
+      cursor: pointer; transition: border .15s, transform .15s;
+    }
+    .avatar-color-btn.selected { border-color: var(--text) !important; transform: scale(1.15); }
+
+    /* Stats */
+    .profile-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; }
+    .ps-card { background: var(--bg2); border-radius: 12px; padding: .9rem; text-align: center; }
+    .ps-card strong { display: block; font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--accent); }
+    .ps-card span   { font-size: .72rem; color: var(--text2); }
+
+    /* Partner-Info */
+    .partner-hint { background: rgba(196,98,45,.06); border: 1.5px solid rgba(196,98,45,.2); border-radius: 12px; padding: 1rem 1.25rem; font-size: .82rem; color: var(--text2); line-height: 1.6; }
+    .partner-hint strong { color: var(--text); }
+
+    @media(max-width:640px) {
+      .auth-card { padding: 1.75rem 1.25rem; }
+      .profile-hero { flex-direction: column; text-align: center; }
+      .profile-stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
   </style>
 </head>
 <body>
-
   <nav id="main-nav"></nav>
 
   <main>
 
-    <!-- Nicht eingeloggt -->
+    <!-- ── Nicht eingeloggt ── -->
     <div class="auth-wrap" id="auth-section">
       <div class="auth-card">
         <span class="auth-logo">🔐</span>
         <div class="auth-title">Mein Konto</div>
         <div class="auth-sub">Melde dich an, um dein Inventar auf<br>allen Geräten synchron zu halten.</div>
-
         <div class="auth-tabs">
           <button class="auth-tab active" id="tab-login"    onclick="switchTab('login')">Anmelden</button>
           <button class="auth-tab"        id="tab-register" onclick="switchTab('register')">Registrieren</button>
         </div>
-
         <div class="auth-error"   id="auth-error"></div>
         <div class="auth-success" id="auth-success"></div>
-
         <div class="form-group">
           <label class="form-label">E-Mail-Adresse</label>
-          <input type="email" class="form-input" id="auth-email"
-            placeholder="deine@email.de" autocomplete="email"
-            onkeydown="if(event.key==='Enter') submitAuth()">
+          <input type="email" class="form-input" id="auth-email" placeholder="deine@email.de" autocomplete="email" onkeydown="if(event.key==='Enter') submitAuth()">
         </div>
-
         <div class="form-group">
           <label class="form-label">Passwort</label>
-          <input type="password" class="form-input" id="auth-password"
-            placeholder="Mindestens 6 Zeichen"
-            onkeydown="if(event.key==='Enter') submitAuth()">
+          <input type="password" class="form-input" id="auth-password" placeholder="Mindestens 6 Zeichen" onkeydown="if(event.key==='Enter') submitAuth()">
         </div>
-
         <div class="form-group" id="pw2-group" style="display:none">
           <label class="form-label">Passwort bestätigen</label>
-          <input type="password" class="form-input" id="auth-password2"
-            placeholder="Passwort wiederholen"
-            onkeydown="if(event.key==='Enter') submitAuth()">
+          <input type="password" class="form-input" id="auth-password2" placeholder="Passwort wiederholen" onkeydown="if(event.key==='Enter') submitAuth()">
         </div>
-
-        <button class="btn btn-primary btn-auth" id="submit-btn" onclick="submitAuth()">
-          Anmelden
-        </button>
-
+        <button class="btn btn-primary btn-auth" id="submit-btn" onclick="submitAuth()">Anmelden</button>
         <div class="auth-forgot" id="forgot-wrap">
           <a onclick="resetPassword()">Passwort vergessen?</a>
         </div>
       </div>
     </div>
 
-    <!-- Eingeloggt: Profil -->
-    <div class="auth-wrap" id="profile-section" style="display:none">
-      <div class="auth-card">
-        <div class="profile-header">
-          <div class="profile-avatar" id="profile-avatar">?</div>
-          <div class="profile-name"  id="profile-name">–</div>
-          <div class="profile-email" id="profile-email">–</div>
-        </div>
+    <!-- ── Eingeloggt: vollständiges Profil ── -->
+    <div class="profile-wrap" id="profile-section" style="display:none">
 
-        <div class="sync-badge">
+      <!-- Hero -->
+      <div class="profile-hero">
+        <div class="profile-avatar-big" id="prof-avatar-big" title="Farbe ändern" onclick="focusColorPicker()">?</div>
+        <div class="profile-hero-info">
+          <div class="profile-hero-name"  id="prof-display-name">–</div>
+          <div class="profile-hero-email" id="prof-email">–</div>
+          <span class="profile-hero-role" id="prof-role-badge">–</span>
+        </div>
+        <div class="sync-badge" style="flex-shrink:0">
           <div class="sync-dot"></div>
-          <span>Angemeldet &amp; synchronisiert auf allen Geräten</span>
-        </div>
-
-        <div class="profile-stats">
-          <div class="profile-stat"><strong id="ps-rooms">0</strong><span>Räume</span></div>
-          <div class="profile-stat"><strong id="ps-items">0</strong><span>Gegenstände</span></div>
-        </div>
-
-        <div style="margin-top:1.5rem">
-          <button class="btn btn-danger" style="width:100%;justify-content:center" onclick="signOutUser()">
-            🚪 Abmelden
-          </button>
+          <span>Synchronisiert</span>
         </div>
       </div>
-    </div>
 
+      <!-- Statistiken -->
+      <div class="profile-card">
+        <div class="profile-card-title">📊 Mein Inventar</div>
+        <div class="profile-stats-grid">
+          <div class="ps-card"><strong id="ps-rooms">0</strong><span>Räume</span></div>
+          <div class="ps-card"><strong id="ps-items">0</strong><span>Gegenstände</span></div>
+          <div class="ps-card"><strong id="ps-trash">0</strong><span>Im Papierkorb</span></div>
+          <div class="ps-card"><strong id="ps-gut">0%</strong><span>Guter Zustand</span></div>
+        </div>
+      </div>
+
+      <!-- Profil bearbeiten -->
+      <div class="profile-card">
+        <div class="profile-card-title">✏️ Profil bearbeiten</div>
+
+        <div class="form-group">
+          <label class="form-label">Anzeigename</label>
+          <input type="text" class="form-input" id="prof-name-input" placeholder="z.B. Andrea">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Meine Rolle</label>
+          <select class="form-input" id="prof-role-input">
+            <option value="Hauptnutzer">🏠 Hauptnutzer</option>
+            <option value="Partner">💑 Partner</option>
+            <option value="Mitbewohner">🤝 Mitbewohner</option>
+            <option value="Gast">👤 Gast</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Avatar-Farbe</label>
+          <div class="avatar-colors" id="avatar-colors"></div>
+        </div>
+
+        <button class="btn btn-primary" style="margin-top:.5rem" onclick="saveProfile()">💾 Profil speichern</button>
+      </div>
+
+      <!-- Partner-Hinweis -->
+      <div class="profile-card">
+        <div class="profile-card-title">💑 Gemeinsame Wohnung</div>
+        <div class="partner-hint">
+          <strong>So funktioniert es für zwei Nutzer:</strong><br>
+          Beide melden sich mit ihrem eigenen Konto an — die Inventardaten werden über denselben Firebase-Account geteilt, weil ihr beide dieselbe Website nutzt. Wenn dein Partner Gegenstände hinzufügt oder ändert, siehst du das in Echtzeit auf deinem Gerät, und umgekehrt.<br><br>
+          Tipp: Legt Räume und Gegenstände gemeinsam an — dann habt ihr immer den gleichen Überblick was ihr besitzt, noch braucht oder euch wünscht. 🏠✨
+        </div>
+      </div>
+
+      <!-- Abmelden -->
+      <div class="profile-card">
+        <div class="profile-card-title">⚙️ Konto</div>
+        <button class="btn btn-danger" style="width:100%;justify-content:center" onclick="signOutUser()">
+          🚪 Abmelden
+        </button>
+      </div>
+
+    </div>
   </main>
 
   <div id="toast" class="toast"></div>
@@ -144,14 +194,17 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
   <script src="js/firebase-config.js"></script>
   <script src="js/data.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/nav.js"></script>
   <script>
     let isLogin = true;
+    let selectedAvatarColor = '#C4622D';
 
+    const AVATAR_COLORS = ['#C4622D','#5B6E8A','#7B9E6B','#9B6B9B','#C4A22D','#2D9B8A','#8A6B5B','#E07B54'];
+
+    // ── Tabs ────────────────────────
     function switchTab(tab) {
       isLogin = tab === 'login';
       document.getElementById('tab-login').classList.toggle('active', isLogin);
@@ -162,81 +215,128 @@
       clearMsg();
     }
 
-    function showError(msg) {
-      const el = document.getElementById('auth-error');
-      el.innerHTML = msg; el.style.display = 'block';
-      document.getElementById('auth-success').style.display = 'none';
-    }
-
-    function showSuccess(msg) {
-      const el = document.getElementById('auth-success');
-      el.textContent = msg; el.style.display = 'block';
-      document.getElementById('auth-error').style.display = 'none';
-    }
-
-    function clearMsg() {
-      document.getElementById('auth-error').style.display   = 'none';
-      document.getElementById('auth-success').style.display = 'none';
-    }
+    function showError(msg)   { const e=document.getElementById('auth-error');   e.innerHTML=msg; e.style.display='block'; document.getElementById('auth-success').style.display='none'; }
+    function showSuccess(msg) { const e=document.getElementById('auth-success'); e.textContent=msg; e.style.display='block'; document.getElementById('auth-error').style.display='none'; }
+    function clearMsg()       { document.getElementById('auth-error').style.display='none'; document.getElementById('auth-success').style.display='none'; }
 
     function setLoading(on) {
       const btn = document.getElementById('submit-btn');
-      btn.disabled    = on;
+      btn.disabled = on;
       btn.textContent = on ? '⏳ Bitte warten…' : (isLogin ? 'Anmelden' : 'Konto erstellen');
     }
 
     function errMsg(code) {
       const map = {
-        'auth/user-not-found':        '❌ Kein Konto mit dieser E-Mail gefunden.',
-        'auth/wrong-password':        '❌ Falsches Passwort. Bitte erneut versuchen.',
-        'auth/invalid-credential':    '❌ E-Mail oder Passwort falsch.',
-        'auth/email-already-in-use':  '❌ Diese E-Mail ist bereits registriert — bitte anmelden.',
-        'auth/weak-password':         '❌ Das Passwort muss mindestens 6 Zeichen lang sein.',
-        'auth/invalid-email':         '❌ Bitte eine gültige E-Mail-Adresse eingeben.',
-        'auth/too-many-requests':     '❌ Zu viele Versuche. Bitte kurz warten.',
-        'auth/network-request-failed':'❌ Keine Internetverbindung.',
-        'auth/operation-not-allowed': '❌ E-Mail-Login noch nicht aktiviert.<br><small>→ Firebase Console → Authentication → Sign-in method → E-Mail/Passwort aktivieren</small>',
+        'auth/user-not-found':       '❌ Kein Konto mit dieser E-Mail.',
+        'auth/wrong-password':       '❌ Falsches Passwort.',
+        'auth/invalid-credential':   '❌ E-Mail oder Passwort falsch.',
+        'auth/email-already-in-use': '❌ E-Mail bereits registriert — bitte anmelden.',
+        'auth/weak-password':        '❌ Passwort muss mindestens 6 Zeichen lang sein.',
+        'auth/invalid-email':        '❌ Bitte gültige E-Mail eingeben.',
+        'auth/too-many-requests':    '❌ Zu viele Versuche. Bitte kurz warten.',
+        'auth/operation-not-allowed':'❌ E-Mail-Login noch nicht aktiviert in Firebase.',
       };
-      return map[code] || '❌ Fehler (' + code + '). Bitte erneut versuchen.';
+      return map[code] || '❌ Fehler (' + code + ')';
     }
 
     async function submitAuth() {
       const email = document.getElementById('auth-email').value.trim();
       const pw    = document.getElementById('auth-password').value;
-
-      if (!email)        { showError('Bitte E-Mail-Adresse eingeben.'); return; }
+      if (!email)        { showError('Bitte E-Mail eingeben.'); return; }
       if (!pw)           { showError('Bitte Passwort eingeben.'); return; }
       if (pw.length < 6) { showError('Passwort muss mindestens 6 Zeichen lang sein.'); return; }
-
-      clearMsg();
-      setLoading(true);
-
+      clearMsg(); setLoading(true);
       try {
         if (isLogin) {
           await firebase.auth().signInWithEmailAndPassword(email, pw);
         } else {
           const pw2 = document.getElementById('auth-password2').value;
           if (!pw2)       { showError('Bitte Passwort bestätigen.'); setLoading(false); return; }
-          if (pw !== pw2) { showError('Die Passwörter stimmen nicht überein.'); setLoading(false); return; }
+          if (pw !== pw2) { showError('Passwörter stimmen nicht überein.'); setLoading(false); return; }
           await firebase.auth().createUserWithEmailAndPassword(email, pw);
           showSuccess('✅ Konto erstellt! Du bist jetzt angemeldet.');
         }
-      } catch (err) {
-        showError(errMsg(err.code));
-      } finally {
-        setLoading(false);
-      }
+      } catch (err) { showError(errMsg(err.code)); }
+      finally { setLoading(false); }
     }
 
     async function resetPassword() {
       const email = document.getElementById('auth-email').value.trim();
-      if (!email) { showError('Bitte zuerst E-Mail-Adresse eingeben.'); return; }
+      if (!email) { showError('Bitte E-Mail eingeben.'); return; }
+      try { await firebase.auth().sendPasswordResetEmail(email); showSuccess('✅ Reset-Link an ' + email + ' gesendet.'); }
+      catch (err) { showError(errMsg(err.code)); }
+    }
+
+    // ── Profil ────────────────────────────────
+    function buildAvatarColors() {
+      const wrap = document.getElementById('avatar-colors');
+      if (!wrap) return;
+      wrap.innerHTML = '';
+      AVATAR_COLORS.forEach(c => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'avatar-color-btn' + (c === selectedAvatarColor ? ' selected' : '');
+        btn.style.background = c;
+        btn.style.borderColor = c;
+        btn.onclick = () => { selectedAvatarColor = c; buildAvatarColors(); updateAvatarPreview(); };
+        wrap.appendChild(btn);
+      });
+    }
+
+    function focusColorPicker() {
+      document.getElementById('avatar-colors')?.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function updateAvatarPreview() {
+      const el = document.getElementById('prof-avatar-big');
+      if (el) el.style.background = selectedAvatarColor;
+    }
+
+    async function loadProfile(user) {
       try {
-        await firebase.auth().sendPasswordResetEmail(email);
-        showSuccess('✅ Reset-Link wurde an ' + email + ' gesendet.');
-      } catch (err) {
-        showError(errMsg(err.code));
-      }
+        const doc = await firebase.firestore().collection('profiles').doc(user.uid).get();
+        const data = doc.exists ? doc.data() : {};
+        const name  = data.name  || user.displayName || user.email.split('@')[0];
+        const role  = data.role  || 'Hauptnutzer';
+        const color = data.color || '#C4622D';
+        selectedAvatarColor = color;
+
+        document.getElementById('prof-display-name').textContent = name;
+        document.getElementById('prof-email').textContent        = user.email;
+        document.getElementById('prof-role-badge').textContent   = role;
+        document.getElementById('prof-avatar-big').textContent   = name[0].toUpperCase();
+        document.getElementById('prof-avatar-big').style.background = color;
+
+        document.getElementById('prof-name-input').value  = name;
+        document.getElementById('prof-role-input').value  = role;
+
+        buildAvatarColors();
+
+        // Statistiken
+        document.getElementById('ps-rooms').textContent = state.rooms.length;
+        document.getElementById('ps-items').textContent = state.items.length;
+        document.getElementById('ps-trash').textContent = (state.trash || []).length;
+        const gut = state.items.filter(i => i.condition === 'Gut').length;
+        document.getElementById('ps-gut').textContent = state.items.length
+          ? Math.round(gut / state.items.length * 100) + '%' : '–';
+
+      } catch(err) { console.warn('Profil laden:', err); }
+    }
+
+    async function saveProfile() {
+      const user = firebase.auth().currentUser;
+      if (!user) return;
+      const name  = document.getElementById('prof-name-input').value.trim() || user.email.split('@')[0];
+      const role  = document.getElementById('prof-role-input').value;
+      const color = selectedAvatarColor;
+      try {
+        await firebase.firestore().collection('profiles').doc(user.uid).set({ name, role, color, updatedAt: Date.now() });
+        document.getElementById('prof-display-name').textContent = name;
+        document.getElementById('prof-role-badge').textContent   = role;
+        document.getElementById('prof-avatar-big').textContent   = name[0].toUpperCase();
+        document.getElementById('prof-avatar-big').style.background = color;
+        showToast('Profil gespeichert ✓');
+      } catch(err) { showToast('Fehler beim Speichern'); console.warn(err); }
     }
 
     async function signOutUser() {
@@ -244,26 +344,17 @@
       showToast('Erfolgreich abgemeldet 👋');
     }
 
-    function showProfile(user) {
-      document.getElementById('auth-section').style.display    = 'none';
-      document.getElementById('profile-section').style.display = 'block';
-      const name = user.displayName || user.email.split('@')[0];
-      document.getElementById('profile-avatar').textContent = name[0].toUpperCase();
-      document.getElementById('profile-name').textContent   = name;
-      document.getElementById('profile-email').textContent  = user.email;
-      document.getElementById('ps-rooms').textContent = state.rooms.length;
-      document.getElementById('ps-items').textContent = state.items.length;
-    }
-
-    function showAuthForm() {
-      document.getElementById('auth-section').style.display    = 'block';
-      document.getElementById('profile-section').style.display = 'none';
-    }
-
+    // ── Auth-State ────────────────────────────
     initApp(() => {
       firebase.auth().onAuthStateChanged(user => {
-        if (user) showProfile(user);
-        else      showAuthForm();
+        if (user) {
+          document.getElementById('auth-section').style.display    = 'none';
+          document.getElementById('profile-section').style.display = 'block';
+          loadProfile(user);
+        } else {
+          document.getElementById('auth-section').style.display    = 'block';
+          document.getElementById('profile-section').style.display = 'none';
+        }
       });
     });
   </script>
